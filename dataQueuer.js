@@ -1,5 +1,6 @@
 var http = require('http'); // importing http module. it's a node's default module.
 var fs = require('fs');	// importing filesystem module. using fs to read riobus-config.json.
+var moment = require('moment'); // easy timestamp formatting
 
 // Access riobus-config.json
 var config = JSON.parse(fs.readFileSync(__dirname + "/riobus-config.json")).dataQueuer;
@@ -41,15 +42,20 @@ function appendDataAsync(data_to_append) {
 	});
 }
 
+// Google's Big Query timestamp format, UTC time
+function toTimestamp(datetime) {
+	return moment(datetime).format('YYYY-MM-DD HH:mm:ss');
+}
+
 // Parses the data to insert into bigquery
 function data_formatter() {
 	var formatted_data = "";
 	var bus_array = data.DATA;
 	for(var i = 0; i < bus_array.length; i++) {
 		if(bus_array[i][6] == "") {
-			bus_array[i][6] = NaN; // avoid leaving DIRECAO as ""
-		}
-		formatted_data += '{"DATAHORA": "' + bus_array[i][0] + '", "ORDEM": "' + bus_array[i][1] + '", "LINHA": "' + bus_array[i][2] + '", "LATITUDE": ' + bus_array[i][3] + ', "LONGITUDE": ' + bus_array[i][4] + ', "VELOCIDADE": ' + bus_array[i][5] + ', "DIRECAO":' + bus_array[i][6] + ', "LASTUPDATE": "' + data.LASTUPDATE + '"}\n';
+			bus_array[i][6] = 999; // avoid leaving DIRECAO as ""
+		}		
+		formatted_data += '{"DATAHORA": "' + toTimestamp(bus_array[i][0]) + '", "ORDEM": "' + bus_array[i][1] + '", "LINHA": "' + bus_array[i][2] + '", "LATITUDE": ' + bus_array[i][3] + ', "LONGITUDE": ' + bus_array[i][4] + ', "VELOCIDADE": ' + bus_array[i][5] + ', "DIRECAO":' + bus_array[i][6] + ', "LASTUPDATE": "' + toTimestamp(data.LASTUPDATE) + '"}\n';
 	}
 
 	return formatted_data;
