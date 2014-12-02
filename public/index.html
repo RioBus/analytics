@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <title>RELATORIO</title>
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"></script>
+        <script type="text/javascript" src="date-pt-BR.js"></script>
+        <script type="text/javascript" src="rawCollectedData.js"></script>
+        <script type="text/javascript" src="relatorioCodigo.js"></script>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/bootstrap-theme.min.css" rel="stylesheet">
+    </head>
+    <body>
+    	<nav class="navbar navbar-default" role="navigation">
+           <div class="container-fluid">
+               <!-- Brand and toggle get grouped for better mobile display -->
+               <div class="navbar-header">
+                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                   <span class="sr-only">Toggle navigation</span>
+                   <span class="icon-bar"></span>
+                   </button>
+                   <a class="navbar-brand" href="#">RioBus - Relatórios</a>
+                </div>
+            </div><!-- /.container-fluid -->
+       </nav>
+       <div class="container"> 
+       <h1> Preencha as informações abaixo</h1>
+
+       <form class="form-horizontal" role="form">
+
+        <div class="form-group">
+          <div class="col-sm-offset-1 col-sm-10">
+            <div class="checkbox">
+              <label>
+                <input name="report" type="radio" value="empty-lines" > Ônibus sem linha
+              </label>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="form-group">
+          <div class="col-sm-offset-1 col-sm-10">
+            <div class="checkbox">
+              <label>
+                <input name="report" type="radio" value="stopped" > Ônibus parados
+              </label>
+            </div>
+          </div>
+        </div>
+    <div class="form-group">
+       <label for="lat" class="col-sm-2 control-label">Latitude</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="lat" placeholder="Latitude">
+        </div>
+    </div>
+
+    <div class="form-group">
+       <label for="lng" class="col-sm-2 control-label">Longitude</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="lng" placeholder="Longitude">
+        </div>
+    </div>
+
+    <div class="form-group">
+       <label for="r" class="col-sm-2 control-label">Raio</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="r" placeholder="Raio">
+        </div>
+    </div>
+
+    <div class="form-group">
+       <label for="minv" class="col-sm-2 control-label">Velocidade Mínima</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="minv" placeholder="Velocidade Mínima">
+        </div>
+    </div>
+    <hr>
+        <div class="form-group">
+          <div class="col-sm-offset-1 col-sm-10">
+            <div class="checkbox">
+              <label>
+                <input name="report" type="radio" value="outdated-gps" > GPS desatualizado
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+           <label for="hour" class="col-sm-2 control-label">Atraso (em horas)</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="hour" placeholder="Atraso (em horas)">
+            </div>
+        </div>
+    <hr>
+        <div class="form-group">
+          <div class="col-sm-offset-1 col-sm-10">
+            <div class="checkbox">
+              <label>
+                <input name="report" type="radio" value="line-counter-by-bus" > Linhas por quantidade de ônibus
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+           <label for="minq" class="col-sm-2 control-label">Qnt mínima de ônibus</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="minq" placeholder="Quantidade mínima de ônibus">
+            </div>
+            <label for="maxq" class="col-sm-2 control-label">Qnt máxima de ônibus</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="maxq" placeholder="Quantidade máxima de ônibus">
+            </div>
+        </div>  
+        <hr>
+
+        <div class="form-group">
+          <div class="col-sm-offset-1 col-sm-10">
+            <div class="checkbox">
+              <label>
+                <input name="report" type="radio" value="buses-by-speed" > Ônibus por faixa de velocidade
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+           <label for="mins" class="col-sm-2 control-label">Velocidade Mínima</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="mins" placeholder="Velocidade Mínima">
+            </div>
+            <label for="maxs" class="col-sm-2 control-label">Velocidade Máxima</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="maxs" placeholder="Velocidade Máxima">
+            </div>
+        </div>  
+
+        <div class="form-group">
+           <label for="lines" class="col-sm-2 control-label">Linhas</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="lines" placeholder="(Opcional, separe por vírgulas)">
+            </div>
+        </div>
+        <hr>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="submit" id="button" class="btn btn-success"> Enviar </button>
+            </div>
+        </div>
+        <p id='resposta'></p>
+        <form>
+        </div>
+        </body>
+</html>
+
+
+
