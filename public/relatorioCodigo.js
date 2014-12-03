@@ -139,7 +139,7 @@ window.onload = function() {
 
 	$(document).on('click', '#button', function() {
 		var selected = $('input[name="report"]:checked').val();
-		$.getJSON('http://riob.us:81/all?callback=?', function(data, status) {
+		$.getJSON('http://66.228.60.200/all?callback=?', function(data, status) {
 			switch (selected) {
 				case "empty-lines":
 					result = emptyLines(data)
