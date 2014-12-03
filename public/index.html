@@ -14,23 +14,46 @@
     </head>
     <body>
     	<nav class="navbar navbar-default" role="navigation">
-           <div class="container-fluid">
-               <!-- Brand and toggle get grouped for better mobile display -->
-               <div class="navbar-header">
-                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                   <span class="sr-only">Toggle navigation</span>
-                   <span class="icon-bar"></span>
-                   </button>
-                   <a class="navbar-brand" href="#">RioBus - Relatórios</a>
-                </div>
-            </div><!-- /.container-fluid -->
-       </nav>
+        <div class="container-fluid">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">RioBus - Relatórios</a>
+          </div>
+
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Selecione um relatório<span class="caret"/></a>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a data-input-id="empty-lines">Ônibus sem linha</a></li>
+                  <li class="divider"></li>
+                  <li><a data-input-id="stopped">Ônibus parados</a></li>
+                  <li class="divider"></li>
+                  <li><a data-input-id="outdated-gps">GPS desatualizado</a></li>
+                  <li class="divider"></li>
+                  <li><a data-input-id="line-counter-by-bus">Linhas por quantidade de ônibus</a></li>
+                  <li class="divider"></li>
+                  <li><a data-input-id="buses-by-speed">Ônibus por faixa de velocidade</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+      </nav>
+
        <div class="container"> 
        <h1> Preencha as informações abaixo</h1>
 
        <form class="form-horizontal" role="form">
 
-        <div class="form-group">
+        <div class="form-group" data-form-name="empty-lines">
           <div class="col-sm-offset-1 col-sm-10">
             <div class="checkbox">
               <label>
@@ -39,8 +62,8 @@
             </div>
           </div>
         </div>
-        <hr>
-        <div class="form-group">
+        
+        <div class="form-group" data-form-name="stopped">
           <div class="col-sm-offset-1 col-sm-10">
             <div class="checkbox">
               <label>
@@ -49,35 +72,35 @@
             </div>
           </div>
         </div>
-    <div class="form-group">
+    <div class="form-group" data-form-name="stopped">
        <label for="lat" class="col-sm-2 control-label">Latitude</label>
         <div class="col-sm-10">
             <input type="text" class="form-control" id="lat" placeholder="Latitude">
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" data-form-name="stopped">
        <label for="lng" class="col-sm-2 control-label">Longitude</label>
         <div class="col-sm-10">
             <input type="text" class="form-control" id="lng" placeholder="Longitude">
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" data-form-name="stopped">
        <label for="r" class="col-sm-2 control-label">Raio</label>
         <div class="col-sm-10">
             <input type="text" class="form-control" id="r" placeholder="Raio">
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" data-form-name="stopped">
        <label for="minv" class="col-sm-2 control-label">Velocidade Mínima</label>
         <div class="col-sm-10">
             <input type="text" class="form-control" id="minv" placeholder="Velocidade Mínima">
         </div>
     </div>
-    <hr>
-        <div class="form-group">
+    
+        <div class="form-group" data-form-name="outdated-gps">
           <div class="col-sm-offset-1 col-sm-10">
             <div class="checkbox">
               <label>
@@ -87,14 +110,14 @@
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" data-form-name="outdated-gps">
            <label for="hour" class="col-sm-2 control-label">Atraso (em horas)</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" id="hour" placeholder="Atraso (em horas)">
             </div>
         </div>
-    <hr>
-        <div class="form-group">
+    
+        <div class="form-group" data-form-name="line-counter-by-bus">
           <div class="col-sm-offset-1 col-sm-10">
             <div class="checkbox">
               <label>
@@ -104,7 +127,7 @@
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" data-form-name="line-counter-by-bus">
            <label for="minq" class="col-sm-2 control-label">Qnt mínima de ônibus</label>
             <div class="col-sm-4">
                 <input type="text" class="form-control" id="minq" placeholder="Quantidade mínima de ônibus">
@@ -114,9 +137,9 @@
                 <input type="text" class="form-control" id="maxq" placeholder="Quantidade máxima de ônibus">
             </div>
         </div>  
-        <hr>
+        
 
-        <div class="form-group">
+        <div class="form-group" data-form-name="buses-by-speed">
           <div class="col-sm-offset-1 col-sm-10">
             <div class="checkbox">
               <label>
@@ -126,7 +149,7 @@
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" data-form-name="buses-by-speed">
            <label for="mins" class="col-sm-2 control-label">Velocidade Mínima</label>
             <div class="col-sm-4">
                 <input type="text" class="form-control" id="mins" placeholder="Velocidade Mínima">
@@ -137,15 +160,15 @@
             </div>
         </div>  
 
-        <div class="form-group">
+        <div class="form-group" data-form-name="buses-by-speed">
            <label for="lines" class="col-sm-2 control-label">Linhas</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" id="lines" placeholder="(Opcional, separe por vírgulas)">
             </div>
         </div>
-        <hr>
+
         <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="col-sm-offset-5 col-sm-6">
               <button type="submit" id="button" class="btn btn-success"> Enviar </button>
             </div>
         </div>

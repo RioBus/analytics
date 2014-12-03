@@ -178,3 +178,23 @@ window.onload = function() {
 		});
 	});
 }
+$(function(){
+	$('.checkbox').hide();
+	$('ul[role=menu] a').click(function(event) {
+		var inputName = $(this).data('input-id');
+		showForm(inputName);
+		
+	});
+	$('ul[role=menu] a').first().trigger('click')
+
+})
+function showForm(form){
+	var formTitle = $('a[data-input-id='+form+']').html();
+	$('.dropdown-toggle').html( formTitle + '<span class="caret"/>');
+	$('h1').html(formTitle);
+	$('[data-form-name]:visible').fadeOut('fast', function() {
+		$('[data-form-name='+form+']').fadeIn('fast',function() {
+			$('input[value='+form+']').trigger('click')
+		});	
+	});
+}
