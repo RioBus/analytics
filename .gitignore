@@ -27,3 +27,4 @@ node_modules
 # Users Environment Variables
 .lock-wscript
 queue.json
+queue.json.gz
