@@ -3,6 +3,6 @@
 		"host": "riob.us",
 		"path": "/all",
 		"port": 81,
-		"intervalTime": 10000
+		"intervalTime": 60000
 	}
 }

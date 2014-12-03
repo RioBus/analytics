@@ -66,9 +66,7 @@ window.onload = function() {
 	}
 
 	function toDateTime(dateTimeString) {
-		var dateBR = dateTimeString.substring(3, 6) + dateTimeString.substring(0, 2) + dateTimeString.substring(5);
-
-		return new Date(Date.parse(dateBR));
+		return new Date(dateTimeString);		
 	}
 
 	// lines by buses count
@@ -139,12 +137,9 @@ window.onload = function() {
 		return output;
 	}
 
-	function getData() {
-
-	};
 	$(document).on('click', '#button', function() {
 		var selected = $('input[name="report"]:checked').val();
-		$.getJSON('http://192.168.1.128:8080/all?callback=?', function(data, status) {
+		$.getJSON('http://riob.us:81/all?callback=?', function(data, status) {
 			switch (selected) {
 				case "empty-lines":
 					result = emptyLines(data)
