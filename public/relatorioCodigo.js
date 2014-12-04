@@ -3,59 +3,96 @@ window.onload = function() {
 	// 'data' é uma variavel ja definida no outro arquivo javascript. vc precisa manipular essa variavel 'data'.
 
 	var emptyLines = function(data) {
-		var l = data.DATA.length;
-		var busesByLine = {};
-		for (var i = l - 1; i >= 0; i--) {
-			var bus = data.DATA[i];
-			var key = ("" + bus[2]).trim(); // trimming whitespaces to normalize keys
-			if (busesByLine[key])
-				busesByLine[key].push(bus);
-			else
-				busesByLine[key] = [bus];
-		}
-		var emptyLinesData = busesByLine[""]; // empty lines is represented by empty strings
+		var emptyLinesData = [];
+		var averageEmptyLines = 0;
+		data.map(function(data) {
+			var l = data.DATA.length;
+			var busesByLine = {};
+			for (var i = l - 1; i >= 0; i--) {
+				var bus = data.DATA[i];
+				var key = ("" + bus[2]).trim(); // trimming whitespaces to normalize keys
+				if (busesByLine[key])
+					busesByLine[key].push(bus);
+				else
+					busesByLine[key] = [bus];
+			}
+			emptyLinesData = emptyLinesData.concat(busesByLine[""]); // empty lines is represented by empty strings
+		});
+		averageEmptyLines = calculatesAverageNumber(emptyLinesData, data);
+		var uniqueLines = removeDuplicatedFromArray(emptyLinesData);
 		return {
-			"emptyLines": emptyLinesData.length,
-			"emptyLinesBuses": emptyLinesData
+			"emptyLines": averageEmptyLines,
+			"emptyLinesBuses": uniqueLines
 		};
+	}
+
+	var calculatesAverageNumber = function(array, jsonArray) {
+		return parseInt(array.length / (jsonArray.length + 1));
+	}
+
+	var removeDuplicatedFromArray = function(array) {
+		var uniqueArray = [];
+		uniqueArray.push(array[0]);
+		$.each(array, function(i, el){
+	    // if(el[1] ) uniqueLines.push(el);
+	    for (var j = uniqueArray.length - 1; j >= 0; j--) {
+	     	if(uniqueArray[j][1] === el[1]) break;
+	     	if(j === 0) uniqueArray.push(el);
+	    }; 
+		});
+		return uniqueArray;
 	}
 
 
 	var stopedInArea = function(data, lat, lng, r, minvelocity) {
-		minvelocity = minvelocity || 0; // if minvelocity is set, check if bus is at most at this velocity
-		var l = data.DATA.length;
-		var center = new google.maps.LatLng(lat, lng);
 		var stoped = [];
-		for (var i = l - 1; i >= 0; i--) {
-			var bus = data.DATA[i];
-			// making use of googles magical function to calculate if point given is inside of circle
-			// because lat and lng are not equally spaced (our planet is a (almost) sphere)
-			if (google.maps.geometry.spherical.computeDistanceBetween(center, new google.maps.LatLng(bus[3], bus[4])) < r &&
-				bus[5] <= minvelocity)
-				stoped.push(bus);
-		}
+		minvelocity = minvelocity || 0; // if minvelocity is set, check if bus is at most at this velocity
+		var center = new google.maps.LatLng(lat, lng);
+
+		data.map(function(data) {
+			var l = data.DATA.length;
+			for (var i = l - 1; i >= 0; i--) {
+				var bus = data.DATA[i];
+				// making use of googles magical function to calculate if point given is inside of circle
+				// because lat and lng are not equally spaced (our planet is a (almost) sphere)
+				if (google.maps.geometry.spherical.computeDistanceBetween(center, new google.maps.LatLng(bus[3], bus[4])) < r &&
+					bus[5] <= minvelocity)
+					// stoped.push(bus);
+					stoped = stoped.concat([bus]);
+			}
+		});
+		var average = calculatesAverageNumber(stoped, data);
+		var uniqueStopped = removeDuplicatedFromArray(stoped);
 		return {
-			"totalStoped": stoped.length,
-			"stopedBuses": stoped,
+			"totalStoped": average,
+			"stopedBuses": uniqueStopped,
 		};
 	}
 
 	// GPS outdated
 	function busesWithGPSoutDated(hour, data) {
-		var buses = data.DATA;
 		var outDatedBuses = [];
+		
+		data.map(function(data) {
+			var buses = data.DATA;
 
-		var dateTimeBoundary = getDateTimeBoundary(hour);
-		var bus;
+			var dateTimeBoundary = getDateTimeBoundary(hour);
+			var bus;
 
-		for (var i = 0; i < buses.length; i++) {
-			bus = buses[i];
+			for (var i = 0; i < buses.length; i++) {
+				bus = buses[i];
 
-			if (toDateTime(bus[0]) <= dateTimeBoundary)
-				outDatedBuses.push(bus);
-		}
+				if (toDateTime(bus[0]) <= dateTimeBoundary)
+					outDatedBuses.push(bus);
+			}
+		});
+		var average = calculatesAverageNumber(outDatedBuses, data);
+		var uniqueOutDated = removeDuplicatedFromArray(outDatedBuses);
 
-		return outDatedBuses;
+		return {
+			"totalOutDated": average,
+			"outDatedBuses": uniqueOutDated,
+		};
 	}
 
 	function getDateTimeBoundary(hour) {
@@ -71,35 +108,43 @@ window.onload = function() {
 
 	// lines by buses count
 	function line_counter_by_bus_range(min_limit, max_limit, data) {
-		var busArray = data["DATA"];
-		var bus_lines = [];
 		var output_list = [];
+		
+		data.map(function(data) {
+			var busArray = data["DATA"];
+			var bus_lines = [];
 
-		// sort each bus to it's respective line
-		for (var i = busArray.length - 1; i >= 0; i--) {
-			var bus = busArray[i];
-			var key = "" + bus[2];
-			if (bus_lines[key]) { // if key already exists in data structure.
-				bus_lines[key].push(bus); // add this bus to this key (add bus to its respective line).
-			} else { // if key doesn't exist.
-				bus_lines[key] = [bus]; // instantiate an array in the key with this bus inside it.
-			}
-		}
-
-		// check if bus line is in bus counter range
-		for (var i = bus_lines.length - 1; i >= 0; i--) {
-			if (bus_lines[i]) { // check if bus line exists
-				var bus_counter = bus_lines[i].length;
-				if (bus_counter <= max_limit && bus_counter >= min_limit) {
-					output_list.push(i);
+			// sort each bus to it's respective line
+			for (var i = busArray.length - 1; i >= 0; i--) {
+				var bus = busArray[i];
+				var key = "" + bus[2];
+				if (bus_lines[key]) { // if key already exists in data structure.
+					bus_lines[key].push(bus); // add this bus to this key (add bus to its respective line).
+				} else { // if key doesn't exist.
+					bus_lines[key] = [bus]; // instantiate an array in the key with this bus inside it.
 				}
 			}
-		}
+
+			// check if bus line is in bus counter range
+			for (var i = bus_lines.length - 1; i >= 0; i--) {
+				if (bus_lines[i]) { // check if bus line exists
+					var bus_counter = bus_lines[i].length;
+					if (bus_counter <= max_limit && bus_counter >= min_limit) {
+						output_list.push(i);
+					}
+				}
+			}
+		});
 
 		// prepare output
+		var uniqueLines = [];
+		// cant use removeDuplicatedFromArray because it is not a bus array
+		$.each(output_list, function(i, el){
+		  if($.inArray(el, uniqueLines) === -1) uniqueLines.push(el);
+		});
 		var output = {
-			"number of lines": output_list.length,
-			"lines": output_list
+			"number of lines": calculatesAverageNumber(output_list, data),
+			"lines": uniqueLines
 		};
 
 		return output;
@@ -107,10 +152,8 @@ window.onload = function() {
 
 
 	function buses_in_speed_range(min_speed, max_speed, data, lines) {
-
-		lines = lines || []; // default: no lines to validate
-		var busArray = data["DATA"];
 		var in_range_buses = [];
+		lines = lines || []; // default: no lines to validate
 		var skip_line_validator = true;
 
 		// checks if should validate lines
@@ -118,20 +161,25 @@ window.onload = function() {
 			skip_line_validator = false;
 		}
 
-		// find buses in speed range
-		for (var i = busArray.length - 1; i >= 0; i--) {
-			var speed = busArray[i][5];
-			if ((speed <= max_speed && speed >= min_speed) // checks speed range
-				&& (skip_line_validator || (lines.indexOf("" + busArray[i][2]) > -1))) // checks whether should validate lines and bus lines array
-			{
-				in_range_buses.push(busArray[i]);
+		data.map(function(data) {
+			var busArray = data["DATA"];
+
+			// find buses in speed range
+			for (var i = busArray.length - 1; i >= 0; i--) {
+				var speed = busArray[i][5];
+				if ((speed <= max_speed && speed >= min_speed) // checks speed range
+					&& (skip_line_validator || (lines.indexOf( busArray[i][2]) > -1))) // checks whether should validate lines and bus lines array
+				{
+					in_range_buses.push(busArray[i]);
+				}
 			}
-		}
+			console.log(in_range_buses);
+		});
 
 		// prepare output
 		var output = {
-			"number of buses": in_range_buses.length,
-			"buses": in_range_buses
+			"number of buses": calculatesAverageNumber(in_range_buses, data),
+			"buses": removeDuplicatedFromArray(in_range_buses)
 		};
 
 		return output;
@@ -139,7 +187,7 @@ window.onload = function() {
 
 	$(document).on('click', '#button', function() {
 		var selected = $('input[name="report"]:checked').val();
-		$.getJSON('http://66.228.60.200/all?callback=?', function(data, status) {
+		$.getJSON('http://localhost:3002/api/2014120410/2014120410', function(data, status) {
 			switch (selected) {
 				case "empty-lines":
 					result = emptyLines(data)
@@ -169,7 +217,7 @@ window.onload = function() {
 					result = buses_in_speed_range(mins, maxs, data, lines);
 					break;
 			}
-			document.getElementById("resposta").innerHTML = JSON.stringify(result);
+			document.getElementById("resposta").innerHTML = "JSON.stringify(result)";
 		});
 	});
 }
