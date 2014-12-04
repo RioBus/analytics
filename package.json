@@ -7,7 +7,8 @@
     "start": "node riob-us/server.js"
   },
   "dependencies": {
-    "express": "~4.10.x"
+    "express": "~4.10.x",
+    "moment": "*"
   },
   "engines": {
     "node": "0.10.x"
