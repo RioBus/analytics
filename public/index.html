@@ -4,6 +4,7 @@
         <title>RELATORIO</title>
         <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
         <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/moment-with-locales.min.js"></script>
         <script type="text/javascript" src="js/bootstrap.min.js"></script>
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"></script>
         <script type="text/javascript" src="date-pt-BR.js"></script>
@@ -169,10 +170,13 @@
 
         <div class="form-group">
             <div class="col-sm-offset-5 col-sm-6">
-              <button type="submit" id="button" class="btn btn-success"> Enviar </button>
+              <button type="button" id="button" class="btn btn-success"> Enviar </button>
             </div>
         </div>
-        <p id='resposta'></p>
+        <div id='resposta' >
+        <h2> </h2>
+        <table class='table table-bordered'><thead></thead><tbody></tbody></table>
+        </div>
         <form>
         </div>
         </body>
