@@ -187,7 +187,24 @@ window.onload = function() {
 
 	$(document).on('click', '#button', function() {
 		var selected = $('input[name="report"]:checked').val();
-		$.getJSON('http://localhost:3002/api/2014120410/2014120410', function(data, status) {
+		var dateNow = $("#dateNow");
+		var initialDate = $("#initialDate").val();
+		var finalDate = $("#finalDate").val();
+		var url;
+
+		if (dateNow.is(":checked") == true) {
+			url = "http://rest.riob.us/all?callback=?";
+		}
+		else {
+			url = "http://localhost:3002/api/" + initialDate + "/" + finalDate;
+		}
+
+		$.getJSON(url, function(data, status) {
+			
+			if (dateNow.is(":checked")) {
+				data = [data];
+			}
+
 			switch (selected) {
 				case "empty-lines":
 					result = emptyLines(data)
@@ -217,7 +234,7 @@ window.onload = function() {
 					result = buses_in_speed_range(mins, maxs, data, lines);
 					break;
 			}
-			document.getElementById("resposta").innerHTML = "JSON.stringify(result)";
+			document.getElementById("resposta").innerHTML = JSON.stringify(result);
 		});
 	});
 }
