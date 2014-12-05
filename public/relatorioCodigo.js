@@ -195,7 +195,16 @@ window.onload = function() {
 			url = "http://rest.riob.us/all?callback=?";
 		}
 		else {
-			url = "http://localhost:3002/api/" + initialDate + "/" + finalDate;
+			//converting to correct format, from datetime input, using moment js
+			if (initialDate.length == 0 && finalDate.length == 0 ){
+				alert("Por favor, preencha as datas, ou marque a opção 'Obter dados em tempo real'. ")
+
+			}
+			else {
+				initialDate = moment(initialDate,"DD/MM/YYYY - HH").format("YYYYMMDDHH");
+				finalDate = moment(finalDate,"DD/MM/YYYY - HH").format("YYYYMMDDHH");
+				url = "http://localhost:3002/api/" + initialDate + "/" + finalDate;
+			}
 		}
 
 		$.getJSON(url, function(data, status) {
@@ -238,30 +247,48 @@ window.onload = function() {
 
 $(function(){
 	$('.checkbox').hide();
-	if (window.location.href.indexOf('report') > 0){
 
-	}
 	$('ul[role=menu] a').click(function(event) {
+		//When the user clicks on a report, the page animates and show related fields
 		var inputName = $(this).data('input-id');
 		showForm(inputName);
-		
 	});
-	$('ul[role=menu] a').first().trigger('click')
 
+	$('ul[role=menu] a').first().trigger('click');
+
+	 //generating datetimepicker for initialDate and finalDate
+	$('[id*=Date]').datetimepicker({
+		useMinutes: false,
+    	useSeconds: false
+	});
+
+	$("#initialDate").on("dp.change",function (e) {
+		//The final date must have as minimun value the initial date
+       $('#finalDate').data("DateTimePicker").setMinDate(e.date);
+    });
+	// when the page loads, the initial and final date must be disabled
+	$('[id*=Date]').prop('disabled', true);
+
+	$('#dateNow').on('change',function(event) {
+		event.preventDefault();
+		//when the dateNow checkbox changes, the fields become available or no
+		$('[id*=Date]').prop('disabled', $(this).prop('checked') );
+	});
 })
 function showForm(form){
+	//Making fade transition to hide previous report and show the other
 	var formTitle = $('a[data-input-id='+form+']').html();
 	$('.dropdown-toggle').html( formTitle + '<span class="caret"/>');
 	$('h1').html(formTitle);
 	$('[data-form-name]:visible').fadeOut('fast', function() {
 		$('[data-form-name='+form+']').fadeIn('fast',function() {
 			$('input[value='+form+']').trigger('click')
-		});	
+		});
 	});
 }
-var t ;
+
 function generateTable(answerArray,report){
-	t = answerArray;
+	//placing server's answer on a better format for the user...
 	if (answerArray.length > 1){}
 	switch (report) {
 	case "empty-lines":
@@ -277,7 +304,7 @@ function generateTable(answerArray,report){
 			$('#resposta > table > thead').append('<th> Código da Linha </th>');
 			for (var i in answerArray.emptyLinesBuses){
 				var linha = $('<tr>');
-				linha.append('<td>' + moment(answerArray.emptyLinesBuses[i][0]).format('MM/DD/YYYY hh:mm')  + ' </td>');
+				linha.append('<td>' + moment(answerArray.emptyLinesBuses[i][0]).format('DD/MM/YYYY hh:mm')  + ' </td>');
 				linha.append('<td>' + answerArray.emptyLinesBuses[i][1] + ' </td>');
 				$('#resposta > table > tbody').append(linha);
 
@@ -298,7 +325,7 @@ function generateTable(answerArray,report){
 			$('#resposta > table > thead').append('<th> Código da Linha </th>');
 			for (var i in answerArray.stopedBuses){
 				var linha = $('<tr>');
-				linha.append('<td>' + moment(answerArray.stopedBuses[i][0]).format('MM/DD/YYYY hh:mm')  + ' </td>');
+				linha.append('<td>' + moment(answerArray.stopedBuses[i][0]).format('DD/MM/YYYY hh:mm')  + ' </td>');
 				linha.append('<td>' + answerArray.stopedBuses[i][1] + ' </td>');
 				$('#resposta > table > tbody').append(linha);
 
@@ -319,7 +346,7 @@ function generateTable(answerArray,report){
 			$('#resposta > table > thead').append('<th> Código da Linha </th>');
 			for (var i in answerArray.outDatedBuses){
 				var linha = $('<tr>');
-				linha.append('<td>' + moment(answerArray.outDatedBuses[i][0]).format('MM/DD/YYYY hh:mm')  + ' </td>');
+				linha.append('<td>' + moment(answerArray.outDatedBuses[i][0]).format('DD/MM/YYYY hh:mm')  + ' </td>');
 				linha.append('<td>' + answerArray.outDatedBuses[i][1] + ' </td>');
 				$('#resposta > table > tbody').append(linha);
 
@@ -363,7 +390,7 @@ function generateTable(answerArray,report){
 
 			for (var i in answerArray.buses){
 				var linha = $('<tr>');
-				linha.append('<td>' + moment(answerArray.buses[i][0]).format('MM/DD/YYYY hh:mm')  + ' </td>');
+				linha.append('<td>' + moment(answerArray.buses[i][0]).format('DD/MM/YYYY hh:mm')  + ' </td>');
 				linha.append('<td>' + answerArray.buses[i][1] + ' </td>');
 				linha.append('<td>' + answerArray.buses[i][5] + ' Km/h' + ' </td>');
 
