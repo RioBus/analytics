@@ -13,8 +13,6 @@ app.get('/api/:min_date/:max_date', function (req, res) {
   var files_to_use = [];
   var l = allFiles.length;
 
-  console.log(l);
-
   // removes the .json from file name
   var allFilesName = allFiles.map(function(str) {
     return str.split(".")[0];

@@ -173,7 +173,6 @@ window.onload = function() {
 					in_range_buses.push(busArray[i]);
 				}
 			}
-			console.log(in_range_buses);
 		});
 
 		// prepare output
@@ -200,7 +199,6 @@ window.onload = function() {
 		}
 
 		$.getJSON(url, function(data, status) {
-			
 			if (dateNow.is(":checked")) {
 				data = [data];
 			}
@@ -233,7 +231,6 @@ window.onload = function() {
 					result = buses_in_speed_range(mins, maxs, data, lines);
 					break;
 			}
-			//document.getElementById("resposta").innerHTML = JSON.stringify(result);
 			generateTable(result,selected);
 		});
 	});
