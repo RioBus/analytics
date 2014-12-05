@@ -204,12 +204,11 @@ window.onload = function() {
 			if (dateNow.is(":checked")) {
 				data = [data];
 			}
-
 			switch (selected) {
 				case "empty-lines":
 					result = emptyLines(data)
 					break;
-				case "stoped":
+				case "stopped":
 					var lat = $('#lat').val(),
 						lng = $('#lng').val(),
 						r = $('#r').val(),
@@ -234,12 +233,17 @@ window.onload = function() {
 					result = buses_in_speed_range(mins, maxs, data, lines);
 					break;
 			}
-			document.getElementById("resposta").innerHTML = JSON.stringify(result);
+			//document.getElementById("resposta").innerHTML = JSON.stringify(result);
+			generateTable(result,selected);
 		});
 	});
 }
+
 $(function(){
 	$('.checkbox').hide();
+	if (window.location.href.indexOf('report') > 0){
+
+	}
 	$('ul[role=menu] a').click(function(event) {
 		var inputName = $(this).data('input-id');
 		showForm(inputName);
@@ -257,4 +261,119 @@ function showForm(form){
 			$('input[value='+form+']').trigger('click')
 		});	
 	});
+}
+var t ;
+function generateTable(answerArray,report){
+	t = answerArray;
+	if (answerArray.length > 1){}
+	switch (report) {
+	case "empty-lines":
+		$('#resposta > h2').html('');
+		$('#resposta > table > thead').html('');
+		$('#resposta > table > tbody').html('');
+		if (answerArray.emptyLines == 0){
+			$('#resposta > h2').append('Nenhum resultado encontrado');	
+		}
+		else {
+			$('#resposta > h2').append('Total de ônibus sem linha - ' + answerArray.emptyLines);
+			$('#resposta > table > thead').append('<th> Hora </th>');
+			$('#resposta > table > thead').append('<th> Código da Linha </th>');
+			for (var i in answerArray.emptyLinesBuses){
+				var linha = $('<tr>');
+				linha.append('<td>' + moment(answerArray.emptyLinesBuses[i][0]).format('MM/DD/YYYY hh:mm')  + ' </td>');
+				linha.append('<td>' + answerArray.emptyLinesBuses[i][1] + ' </td>');
+				$('#resposta > table > tbody').append(linha);
+
+			}
+			$('#resposta').show();
+		}
+		break;
+	case "stopped":
+		$('#resposta > h2').html('');
+		$('#resposta > table > thead').html('');
+		$('#resposta > table > tbody').html('');
+		if (answerArray.totalStoped == 0){
+			$('#resposta > h2').append('Nenhum resultado encontrado');	
+		}
+		else {
+			$('#resposta > h2').append('Total de ônibus sem linha - ' + answerArray.totalStoped);
+			$('#resposta > table > thead').append('<th> Hora </th>');
+			$('#resposta > table > thead').append('<th> Código da Linha </th>');
+			for (var i in answerArray.stopedBuses){
+				var linha = $('<tr>');
+				linha.append('<td>' + moment(answerArray.stopedBuses[i][0]).format('MM/DD/YYYY hh:mm')  + ' </td>');
+				linha.append('<td>' + answerArray.stopedBuses[i][1] + ' </td>');
+				$('#resposta > table > tbody').append(linha);
+
+			}
+			$('#resposta').show();
+		}
+		break;
+	case "outdated-gps":
+		$('#resposta > h2').html('');
+		$('#resposta > table > thead').html('');
+		$('#resposta > table > tbody').html('');
+		if (answerArray.totalOutDated == 0){
+			$('#resposta > h2').append('Nenhum resultado encontrado');	
+		}
+		else {
+			$('#resposta > h2').append('Total de ônibus atrasados - ' + answerArray.totalOutDated);
+			$('#resposta > table > thead').append('<th> Hora </th>');
+			$('#resposta > table > thead').append('<th> Código da Linha </th>');
+			for (var i in answerArray.outDatedBuses){
+				var linha = $('<tr>');
+				linha.append('<td>' + moment(answerArray.outDatedBuses[i][0]).format('MM/DD/YYYY hh:mm')  + ' </td>');
+				linha.append('<td>' + answerArray.outDatedBuses[i][1] + ' </td>');
+				$('#resposta > table > tbody').append(linha);
+
+			}
+			$('#resposta').show();
+		}
+		break;
+
+	case "line-counter-by-bus":
+		$('#resposta > h2').html('');
+		$('#resposta > table > thead').html('');
+		$('#resposta > table > tbody').html('');
+		if (answerArray['number of lines'] == 0){
+			$('#resposta > h2').append('Nenhum resultado encontrado');	
+		}
+		else {
+			$('#resposta > h2').append('Total de linhas - ' + answerArray['number of lines']);
+			$('#resposta > table ').css('width','40%');
+			$('#resposta > table > thead').append('<th> Número da Linha </th>');
+			for (var i in answerArray.lines){
+				var linha = $('<tr>');
+				linha.append('<td>' + answerArray.lines[i] + ' </td>');
+				$('#resposta > table > tbody').append(linha);
+			}
+			$('#resposta').show();
+		}
+		break;
+
+	case "buses-by-speed":
+		$('#resposta > h2').html('');
+		$('#resposta > table > thead').html('');
+		$('#resposta > table > tbody').html('');
+		if (answerArray['number of buses'] == 0){
+			$('#resposta > h2').append('Nenhum resultado encontrado');	
+		}
+		else { 
+			$('#resposta > h2').append('Total de ônibus dentro da faixa de velocidade - ' + answerArray['number of buses']);
+			$('#resposta > table > thead').append('<th> Hora </th>');
+			$('#resposta > table > thead').append('<th> Código da Linha </th>');
+			$('#resposta > table > thead').append('<th> Velocidade Instantânea </th>');
+
+			for (var i in answerArray.buses){
+				var linha = $('<tr>');
+				linha.append('<td>' + moment(answerArray.buses[i][0]).format('MM/DD/YYYY hh:mm')  + ' </td>');
+				linha.append('<td>' + answerArray.buses[i][1] + ' </td>');
+				linha.append('<td>' + answerArray.buses[i][5] + ' Km/h' + ' </td>');
+
+				$('#resposta > table > tbody').append(linha);
+			}
+			$('#resposta').show();
+		}
+		break;
+	}
 }
