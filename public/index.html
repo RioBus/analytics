@@ -6,12 +6,14 @@
         <script type="text/javascript" src="js/jquery.min.js"></script>
         <script type="text/javascript" src="js/moment-with-locales.min.js"></script>
         <script type="text/javascript" src="js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/bootstrap-datetimepicker.min.js"></script>
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"></script>
         <script type="text/javascript" src="date-pt-BR.js"></script>
         <script type="text/javascript" src="rawCollectedData.js"></script>
         <script type="text/javascript" src="relatorioCodigo.js"></script>
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <link href="css/bootstrap-theme.min.css" rel="stylesheet">
+        <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet">
     </head>
     <body>
     	<nav class="navbar navbar-default" role="navigation">
@@ -168,12 +170,20 @@
             </div>
         </div>
 
-        <input type="checkbox" id="dateNow" checked=true> Obter dados em tempo real <br>
-        Obter dados do histórico <br>
-        Data inicial (YYYYMMDDHH)
-        <input type="textbox" id="initialDate">
-        Data final (YYYYMMDDHH)
-        <input type="textbox" id="finalDate">
+        <div class="form-group" >
+          <div class="col-sm-11 col-md-offset-1">
+            <input type="checkbox" id="dateNow" checked=true> Obter dados em tempo real</div>
+          </div>
+        <div class="form-group" >
+           <label for="initialDate" class="col-sm-2 control-label" data-date-format="DD/MM/YYYY - HH" >Data inicial</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="initialDate" placeholder="Insira a Dara e Hora" data-date-format="DD/MM/YYYY - HH:00">
+            </div>
+            <label for="maxs" class="col-sm-2 control-label">Data final</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="finalDate" placeholder="Insira a Dara e Hora" data-date-format="DD/MM/YYYY - HH:00">
+            </div>
+        </div>
 
         <div class="form-group">
             <div class="col-sm-offset-5 col-sm-6">
