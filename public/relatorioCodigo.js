@@ -2,7 +2,19 @@ window.onload = function() {
 
 	// 'data' é uma variavel ja definida no outro arquivo javascript. vc precisa manipular essa variavel 'data'.
 
+	// remove empty jsons of data
+	var analysesData = function(data) {
+		var newData = [];
+		data.map(function(data) {
+			if(JSON.stringify(data) != "{}") {
+				newData.push(data);
+			}
+		});
+		return newData;
+	}
+
 	var emptyLines = function(data) {
+		data = analysesData(data);
 		var emptyLinesData = [];
 		var averageEmptyLines = 0;
 		data.map(function(data) {
@@ -45,6 +57,7 @@ window.onload = function() {
 
 
 	var stopedInArea = function(data, lat, lng, r, minvelocity) {
+		data = analysesData(data);
 		var stoped = [];
 		minvelocity = minvelocity || 0; // if minvelocity is set, check if bus is at most at this velocity
 		var center = new google.maps.LatLng(lat, lng);
@@ -71,12 +84,13 @@ window.onload = function() {
 
 	// GPS outdated
 	function busesWithGPSoutDated(hour, data) {
+		data = analysesData(data);
 		var outDatedBuses = [];
 		
 		data.map(function(data) {
 			var buses = data.DATA;
 
-			var dateTimeBoundary = getDateTimeBoundary(hour);
+			var dateTimeBoundary = getDateTimeBoundary(hour, data.LASTUPDATE);
 			var bus;
 
 			for (var i = 0; i < buses.length; i++) {
@@ -95,8 +109,13 @@ window.onload = function() {
 		};
 	}
 
-	function getDateTimeBoundary(hour) {
-		var now = new Date();
+	function getDateTimeBoundary(hour, lastUpdate) {
+		if(typeof lastUpdate == 'undefined') {
+			lastUpdate = new Date();
+		} else {
+			lastUpdate = toDateTime(lastUpdate);
+		}
+		var now = lastUpdate;
 		var offset = hour * 60 * 60 * 1000;
 
 		return new Date(now.getTime() - offset);
@@ -107,7 +126,8 @@ window.onload = function() {
 	}
 
 	// lines by buses count
-	function line_counter_by_bus_range(min_limit, max_limit, data) {
+	function lineCounterByBusRange(min_limit, max_limit, data) {
+		data = analysesData(data);
 		var output_list = [];
 		
 		data.map(function(data) {
@@ -143,7 +163,7 @@ window.onload = function() {
 		  if($.inArray(el, uniqueLines) === -1) uniqueLines.push(el);
 		});
 		var output = {
-			"number of lines": calculatesAverageNumber(output_list, data),
+			"numberOfLines": calculatesAverageNumber(output_list, data),
 			"lines": uniqueLines
 		};
 
@@ -151,7 +171,8 @@ window.onload = function() {
 	}
 
 
-	function buses_in_speed_range(min_speed, max_speed, data, lines) {
+	function busesInSpeedRange(min_speed, max_speed, data, lines) {
+		data = analysesData(data);
 		var in_range_buses = [];
 		lines = lines || []; // default: no lines to validate
 		var skip_line_validator = true;
@@ -177,7 +198,7 @@ window.onload = function() {
 
 		// prepare output
 		var output = {
-			"number of buses": calculatesAverageNumber(in_range_buses, data),
+			"numberOfBuses": calculatesAverageNumber(in_range_buses, data),
 			"buses": removeDuplicatedFromArray(in_range_buses)
 		};
 
@@ -207,12 +228,21 @@ window.onload = function() {
 			}
 		}
 
-		$.getJSON(url, function(data, status) {
+		$.getJSON(url, function(data, status) {			
 			if (dateNow.is(":checked")) {
 				data = [data];
+				if(toDateTime(data[0].LASTUPDATE) < getDateTimeBoundary(1)) {
+					$('#dataRioOut').append(data[0].LASTUPDATE);
+					$('#dataRioOut').show();
+				} else{
+					$('#dataRioOut').hide();
+				}
+			} else {
+				$('#dataRioOut').hide();
 			}
 			switch (selected) {
 				case "empty-lines":
+				console.log(data);
 					result = emptyLines(data)
 					break;
 				case "stopped":
@@ -229,7 +259,7 @@ window.onload = function() {
 				case "line-counter-by-bus":
 					var minq = $('#minq').val(),
 						maxq = $('#maxq').val();
-					result = line_counter_by_bus_range(minq, maxq, data);
+					result = lineCounterByBusRange(minq, maxq, data);
 					break;
 				case "buses-by-speed":
 					var mins = $('#mins').val(),
@@ -237,7 +267,7 @@ window.onload = function() {
 						lines = $('#lines').val();
 					if (lines)
 						lines = lines.split(/\s*,\s*/g);
-					result = buses_in_speed_range(mins, maxs, data, lines);
+					result = busesInSpeedRange(mins, maxs, data, lines);
 					break;
 			}
 			generateTable(result,selected);
@@ -359,11 +389,11 @@ function generateTable(answerArray,report){
 		$('#resposta > h2').html('');
 		$('#resposta > table > thead').html('');
 		$('#resposta > table > tbody').html('');
-		if (answerArray['number of lines'] == 0){
+		if (answerArray['numberOfLines'] == 0){
 			$('#resposta > h2').append('Nenhum resultado encontrado');	
 		}
 		else {
-			$('#resposta > h2').append('Total de linhas - ' + answerArray['number of lines']);
+			$('#resposta > h2').append('Total de linhas - ' + answerArray['numberOfLines']);
 			$('#resposta > table ').css('width','40%');
 			$('#resposta > table > thead').append('<th> Número da Linha </th>');
 			for (var i in answerArray.lines){
@@ -379,11 +409,11 @@ function generateTable(answerArray,report){
 		$('#resposta > h2').html('');
 		$('#resposta > table > thead').html('');
 		$('#resposta > table > tbody').html('');
-		if (answerArray['number of buses'] == 0){
+		if (answerArray['numberOfBuses'] == 0){
 			$('#resposta > h2').append('Nenhum resultado encontrado');	
 		}
 		else { 
-			$('#resposta > h2').append('Total de ônibus dentro da faixa de velocidade - ' + answerArray['number of buses']);
+			$('#resposta > h2').append('Total de ônibus dentro da faixa de velocidade - ' + answerArray['numberOfBuses']);
 			$('#resposta > table > thead').append('<th> Hora </th>');
 			$('#resposta > table > thead').append('<th> Código da Linha </th>');
 			$('#resposta > table > thead').append('<th> Velocidade Instantânea </th>');
