@@ -224,7 +224,7 @@ window.onload = function() {
 			else {
 				initialDate = moment(initialDate,"DD/MM/YYYY - HH").format("YYYYMMDDHH");
 				finalDate = moment(finalDate,"DD/MM/YYYY - HH").format("YYYYMMDDHH");
-				url = "http://localhost:3002/api/" + initialDate + "/" + finalDate;
+				url = "http://localhost:3002/api/" + initialDate + "/" + finalDate + "?callback=?";
 			}
 		}
 

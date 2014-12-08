@@ -32,7 +32,7 @@ app.get('/api/:min_date/:max_date', function (req, res) {
   };
   response += "]";
 
-  res.send(response);
+  res.jsonp(JSON.parse(response));
 
 })
 
