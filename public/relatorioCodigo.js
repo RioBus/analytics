@@ -373,6 +373,10 @@ function showForm(form){
 			$('input[value='+form+']').trigger('click')
 		});
 	});
+	$('#resposta').hide();
+	$('#csv-button').hide();
+	$('#dataRioOut').hide();
+	$('#dados-analisados').hide();
 }
 
 function generateTable(answerArray,report){
