@@ -35,7 +35,7 @@ window.onload = function() {
 		var uniqueLines = removeDuplicatedFromArray(emptyLinesData);
 		return {
 			"emptyLines": averageEmptyLines,
-			"emptyLinesBuses": uniqueLines,
+			"buses": uniqueLines,
 			"numberOfJsonsInData": data.length,
 			"percentual": averageEmptyLinesPercentual
 		};
@@ -90,7 +90,7 @@ window.onload = function() {
 		var averagePercentual = calculatesAveragePercentual(stoped, data);
 		return {
 			"totalStoped": average,
-			"stopedBuses": uniqueStopped,
+			"buses": uniqueStopped,
 			"numberOfJsonsInData": data.length,
 			"percentual": averagePercentual
 		};
@@ -120,7 +120,7 @@ window.onload = function() {
 
 		return {
 			"totalOutDated": average,
-			"outDatedBuses": uniqueOutDated,
+			"buses": uniqueOutDated,
 			"numberOfJsonsInData": data.length,
 			"percentual": averagePercentual
 		};
@@ -235,6 +235,8 @@ window.onload = function() {
 		return output;
 	}
 
+	var result;
+
 	$(document).on('click', '#button', function() {
 		var selected = $('input[name="report"]:checked').val();
 		var dateNow = $("#dateNow");
@@ -303,7 +305,33 @@ window.onload = function() {
 			generateTable(result,selected);
 		});
 	});
+
+	$(document).on('click', '#csv-button', function() {
+		if(result.buses != undefined) {
+			var csv = "DATAHORA,ORDEM,LINHA,LATITUDE,LONGITUDE,VELOCIDADE,DIRECAO\n";
+			result.buses.map(function(bus) {
+				csv += bus[0] + "," + bus[1] + "," + bus[2] + "," + bus[3] + "," + bus[4] + "," + bus[5] + "," + bus[6] + "\n";
+			});
+      var encodedUri = encodeURI(csv);
+			var link = document.createElement("a");
+			link.setAttribute("href", "data:text/csv;charset=utf-8," + encodedUri);
+			link.setAttribute("download", "onibus.csv");
+			link.click();
+		}
+		if(result.lines != undefined) {
+			var csv = "LINHAS\n";
+			result.lines.map(function(line) {
+				csv += line + "\n";
+			});
+      var encodedUri = encodeURI(csv);
+			var link = document.createElement("a");
+			link.setAttribute("href", "data:text/csv;charset=utf-8," + encodedUri);
+			link.setAttribute("download", "linhas.csv");
+			link.click();
+		}
+	});
 }
+
 
 $(function(){
 	$('.checkbox').hide();
@@ -364,11 +392,11 @@ function generateTable(answerArray,report){
 		else {
 			$('#resposta > h2').append('Total de ônibus sem linha - ' + answerArray.emptyLines + ' (' + answerArray.percentual + '% do total)');
 			$('#resposta > table > thead').append('<th> Hora </th>');
-			$('#resposta > table > thead').append('<th> Código da Linha </th>');
-			for (var i in answerArray.emptyLinesBuses){
+			$('#resposta > table > thead').append('<th> Código do ônibus </th>');
+			for (var i in answerArray.buses){
 				var linha = $('<tr>');
-				linha.append('<td>' + moment(answerArray.emptyLinesBuses[i][0]).format('DD/MM/YYYY hh:mm')  + ' </td>');
-				linha.append('<td>' + answerArray.emptyLinesBuses[i][1] + ' </td>');
+				linha.append('<td>' + moment(answerArray.buses[i][0]).format('DD/MM/YYYY hh:mm')  + ' </td>');
+				linha.append('<td>' + answerArray.buses[i][1] + ' </td>');
 				$('#resposta > table > tbody').append(linha);
 
 			}
@@ -385,11 +413,11 @@ function generateTable(answerArray,report){
 		else {
 			$('#resposta > h2').append('Total de ônibus sem linha - ' + answerArray.totalStoped + ' (' + answerArray.percentual + '% do total)');
 			$('#resposta > table > thead').append('<th> Hora </th>');
-			$('#resposta > table > thead').append('<th> Código da Linha </th>');
-			for (var i in answerArray.stopedBuses){
+			$('#resposta > table > thead').append('<th> Código do ônibus </th>');
+			for (var i in answerArray.buses){
 				var linha = $('<tr>');
-				linha.append('<td>' + moment(answerArray.stopedBuses[i][0]).format('DD/MM/YYYY hh:mm')  + ' </td>');
-				linha.append('<td>' + answerArray.stopedBuses[i][1] + ' </td>');
+				linha.append('<td>' + moment(answerArray.buses[i][0]).format('DD/MM/YYYY hh:mm')  + ' </td>');
+				linha.append('<td>' + answerArray.buses[i][1] + ' </td>');
 				$('#resposta > table > tbody').append(linha);
 
 			}
@@ -406,11 +434,11 @@ function generateTable(answerArray,report){
 		else {
 			$('#resposta > h2').append('Total de ônibus atrasados - ' + answerArray.totalOutDated + ' (' + answerArray.percentual + '% do total)');
 			$('#resposta > table > thead').append('<th> Hora </th>');
-			$('#resposta > table > thead').append('<th> Código da Linha </th>');
-			for (var i in answerArray.outDatedBuses){
+			$('#resposta > table > thead').append('<th> Código do ônibus </th>');
+			for (var i in answerArray.buses){
 				var linha = $('<tr>');
-				linha.append('<td>' + moment(answerArray.outDatedBuses[i][0]).format('DD/MM/YYYY hh:mm')  + ' </td>');
-				linha.append('<td>' + answerArray.outDatedBuses[i][1] + ' </td>');
+				linha.append('<td>' + moment(answerArray.buses[i][0]).format('DD/MM/YYYY hh:mm')  + ' </td>');
+				linha.append('<td>' + answerArray.buses[i][1] + ' </td>');
 				$('#resposta > table > tbody').append(linha);
 
 			}
@@ -448,7 +476,7 @@ function generateTable(answerArray,report){
 		else { 
 			$('#resposta > h2').append('Total de ônibus dentro da faixa de velocidade - ' + answerArray['numberOfBuses'] + ' (' + answerArray.percentual + '% do total)');
 			$('#resposta > table > thead').append('<th> Hora </th>');
-			$('#resposta > table > thead').append('<th> Código da Linha </th>');
+			$('#resposta > table > thead').append('<th> Código do ônibus </th>');
 			$('#resposta > table > thead').append('<th> Velocidade Instantânea </th>');
 
 			for (var i in answerArray.buses){
@@ -463,4 +491,5 @@ function generateTable(answerArray,report){
 		}
 		break;
 	}
+	$('#csv-button').show();
 }
