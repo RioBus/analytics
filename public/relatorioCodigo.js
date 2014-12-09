@@ -32,17 +32,17 @@ window.onload = function() {
 		});
 		var averageEmptyLinesPercentual = calculatesAveragePercentual(emptyLinesData, data);
 		averageEmptyLines = calculatesAverageNumber(emptyLinesData, data);
-		var uniqueLines = removeDuplicatedFromArray(emptyLinesData);
+		//var uniqueLines = removeDuplicatedFromArray(emptyLinesData);
 		return {
 			"emptyLines": averageEmptyLines,
-			"buses": uniqueLines,
+			"buses": emptyLinesData,
 			"numberOfJsonsInData": data.length,
 			"total": calculateTotalBuses(data)
 		};
 	}
 
 	var calculatesAverageNumber = function(array, jsonArray) {
-		return parseInt(array.length / (jsonArray.length));
+		return parseFloat(array.length / (jsonArray.length)).toFixed(2);
 	}
 
 	var calculateTotalBuses = function (jsonArray) {
@@ -50,7 +50,7 @@ window.onload = function() {
 		jsonArray.map(function(data) {
 			total += data.DATA.length;
 		});
-		return parseInt(total);
+		return parseFloat(total/ jsonArray.length).toFixed(2);
 
 	}
 
@@ -76,9 +76,9 @@ window.onload = function() {
 	}
 
 
-	var stopedInArea = function(data, lat, lng, r, minvelocity) {
+	var stoppedInArea = function(data, lat, lng, r, minvelocity) {
 		data = analysesData(data);
-		var stoped = [];
+		var stopped = [];
 		minvelocity = minvelocity || 0; // if minvelocity is set, check if bus is at most at this velocity
 		var center = new google.maps.LatLng(lat, lng);
 
@@ -90,16 +90,16 @@ window.onload = function() {
 				// because lat and lng are not equally spaced (our planet is a (almost) sphere)
 				if (google.maps.geometry.spherical.computeDistanceBetween(center, new google.maps.LatLng(bus[3], bus[4])) < r &&
 					bus[5] <= minvelocity)
-					// stoped.push(bus);
-					stoped = stoped.concat([bus]);
+					// stopped.push(bus);
+					stopped = stopped.concat([bus]);
 			}
 		});
-		var average = calculatesAverageNumber(stoped, data);
-		var uniqueStopped = removeDuplicatedFromArray(stoped);
-		var averagePercentual = calculatesAveragePercentual(stoped, data);
+		var average = calculatesAverageNumber(stopped, data);
+		//var uniqueStopped = removeDuplicatedFromArray(stopped);
+		var averagePercentual = calculatesAveragePercentual(stopped, data);
 		return {
-			"totalStoped": average,
-			"buses": uniqueStopped,
+			"totalstopped": average,
+			"buses": stopped,
 			"numberOfJsonsInData": data.length,
 			"total": calculateTotalBuses(data)
 		};
@@ -124,12 +124,12 @@ window.onload = function() {
 			}
 		});
 		var average = calculatesAverageNumber(outDatedBuses, data);
-		var uniqueOutDated = removeDuplicatedFromArray(outDatedBuses);
+		//var uniqueOutDated = removeDuplicatedFromArray(outDatedBuses);
 		var averagePercentual = calculatesAveragePercentual(outDatedBuses, data);
 
 		return {
 			"totalOutDated": average,
-			"buses": uniqueOutDated,
+			"buses": outDatedBuses,
 			"numberOfJsonsInData": data.length,
 			"total": calculateTotalBuses(data)
 		};
@@ -236,7 +236,7 @@ window.onload = function() {
 		// prepare output
 		var output = {
 			"numberOfBuses": calculatesAverageNumber(in_range_buses, data),
-			"buses": removeDuplicatedFromArray(in_range_buses),
+			"buses": in_range_buses,
 			"numberOfJsonsInData": data.length,
 			"total": calculateTotalBuses(data)
 		};
@@ -292,7 +292,7 @@ window.onload = function() {
 						lng = $('#lng').val(),
 						r = $('#r').val(),
 						minv = $('#minv').val();
-					result = stopedInArea(data, lat, lng, r, minv);
+					result = stoppedInArea(data, lat, lng, r, minv);
 					break;
 				case "outdated-gps":
 					var hour = $('#hour').val();
@@ -417,12 +417,12 @@ function generateTable(answerArray,report){
 			$('#resposta > h2').append('Nenhum resultado encontrado');	
 		}
 		else {
-			$('#resposta > h2').append('Total de ônibus sem linha - ' + answerArray.emptyLines + ' do total de ' + answerArray.total + ' (' + parseFloat(answerArray.emptyLines/answerArray.total*100).toFixed(2) + '% do total)');
+			$('#resposta > h2').append('Média de ônibus sem linha - ' + answerArray.emptyLines + ' do total de ' + answerArray.total + ' (' + parseFloat(answerArray.emptyLines/answerArray.total*100).toFixed(2) + '% do total)');
 			$('#resposta > table > thead').append('<th> Hora </th>');
 			$('#resposta > table > thead').append('<th> Código do ônibus </th>');
 			for (var i in answerArray.buses){
 				var linha = $('<tr>');
-				linha.append('<td>' + moment(answerArray.buses[i][0]).format('DD/MM/YYYY hh:mm')  + ' </td>');
+				linha.append('<td>' + moment(answerArray.buses[i][0]).format('DD/MM/YYYY HH:mm')  + ' </td>');
 				linha.append('<td>' + answerArray.buses[i][1] + ' </td>');
 				$('#resposta > table > tbody').append(linha);
 
@@ -434,16 +434,16 @@ function generateTable(answerArray,report){
 		$('#resposta > h2').html('');
 		$('#resposta > table > thead').html('');
 		$('#resposta > table > tbody').html('');
-		if (answerArray.totalStoped == 0){
+		if (answerArray.totalstopped == 0){
 			$('#resposta > h2').append('Nenhum resultado encontrado');	
 		}
 		else {
-			$('#resposta > h2').append('Total de ônibus sem linha - ' + answerArray.totalStoped + ' do total de ' + answerArray.total + ' (' + parseFloat(answerArray.totalStoped/answerArray.total*100).toFixed(2) + '% do total)');
+			$('#resposta > h2').append('Média de ônibus sem linha - ' + answerArray.totalstopped + ' do total de ' + answerArray.total + ' (' + parseFloat(answerArray.totalstopped/answerArray.total*100).toFixed(2) + '% do total)');
 			$('#resposta > table > thead').append('<th> Hora </th>');
 			$('#resposta > table > thead').append('<th> Código do ônibus </th>');
 			for (var i in answerArray.buses){
 				var linha = $('<tr>');
-				linha.append('<td>' + moment(answerArray.buses[i][0]).format('DD/MM/YYYY hh:mm')  + ' </td>');
+				linha.append('<td>' + moment(answerArray.buses[i][0]).format('DD/MM/YYYY HH:mm')  + ' </td>');
 				linha.append('<td>' + answerArray.buses[i][1] + ' </td>');
 				$('#resposta > table > tbody').append(linha);
 
@@ -459,12 +459,12 @@ function generateTable(answerArray,report){
 			$('#resposta > h2').append('Nenhum resultado encontrado');	
 		}
 		else {
-			$('#resposta > h2').append('Total de ônibus atrasados - ' + answerArray.totalOutDated + ' do total de ' + answerArray.total + ' (' + parseFloat(answerArray.totalOutDated/answerArray.total*100).toFixed(2) + '% do total)');
+			$('#resposta > h2').append('Média de ônibus atrasados - ' + answerArray.totalOutDated + ' do total de ' + answerArray.total + ' (' + parseFloat(answerArray.totalOutDated/answerArray.total*100).toFixed(2) + '% do total)');
 			$('#resposta > table > thead').append('<th> Hora </th>');
 			$('#resposta > table > thead').append('<th> Código do ônibus </th>');
 			for (var i in answerArray.buses){
 				var linha = $('<tr>');
-				linha.append('<td>' + moment(answerArray.buses[i][0]).format('DD/MM/YYYY hh:mm')  + ' </td>');
+				linha.append('<td>' + moment(answerArray.buses[i][0]).format('DD/MM/YYYY HH:mm')  + ' </td>');
 				linha.append('<td>' + answerArray.buses[i][1] + ' </td>');
 				$('#resposta > table > tbody').append(linha);
 
@@ -501,14 +501,14 @@ function generateTable(answerArray,report){
 			$('#resposta > h2').append('Nenhum resultado encontrado');	
 		}
 		else { 
-			$('#resposta > h2').append('Total de ônibus dentro da faixa de velocidade - ' + answerArray.numberOfBuses + ' do total de ' + answerArray.total + ' (' + parseFloat(answerArray.numberOfBuses/answerArray.total*100).toFixed(2) + '% do total)');
+			$('#resposta > h2').append('Média de ônibus dentro da faixa de velocidade - ' + answerArray.numberOfBuses + ' do total de ' + answerArray.total + ' (' + parseFloat(answerArray.numberOfBuses/answerArray.total*100).toFixed(2) + '% do total)');
 			$('#resposta > table > thead').append('<th> Hora </th>');
 			$('#resposta > table > thead').append('<th> Código do ônibus </th>');
 			$('#resposta > table > thead').append('<th> Velocidade Instantânea </th>');
 
 			for (var i in answerArray.buses){
 				var linha = $('<tr>');
-				linha.append('<td>' + moment(answerArray.buses[i][0]).format('DD/MM/YYYY hh:mm')  + ' </td>');
+				linha.append('<td>' + moment(answerArray.buses[i][0]).format('DD/MM/YYYY HH:mm')  + ' </td>');
 				linha.append('<td>' + answerArray.buses[i][1] + ' </td>');
 				linha.append('<td>' + answerArray.buses[i][5] + ' Km/h' + ' </td>');
 
