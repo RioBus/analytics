@@ -14,6 +14,7 @@
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <link href="css/bootstrap-theme.min.css" rel="stylesheet">
         <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
     </head>
     <body>
     	<nav class="navbar navbar-default" role="navigation">
@@ -51,7 +52,9 @@
         </div><!-- /.container-fluid -->
       </nav>
 
-       <div class="container"> 
+      <div id="dvLoading" ></div>
+       <div class="container" id="main-container"> 
+
        <h1> Preencha as informações abaixo</h1>
 
        <form class="form-horizontal" role="form">
@@ -170,10 +173,21 @@
             </div>
         </div>
 
-        <div class="form-group" >
-          <div class="col-sm-11 col-md-offset-1">
-            <input type="checkbox" id="dateNow" checked=true> Obter dados em tempo real</div>
+        <div class="col-md-offset-1" >
+          <div class="radio-inline">
+            <label>
+              <input type="radio" name="dateNow" id="dateNow" checked>
+              Fazer análise a partir do último dado
+            </label>
           </div>
+          <div class="radio-inline">
+            <label>
+              <input type="radio" name="dateNow" id="optionsRadios2" value="option2">
+              Fazer análise em um período de tempo
+            </label>
+          </div>
+        </div>
+
         <div class="form-group" >
            <label for="initialDate" class="col-sm-2 control-label" data-date-format="DD/MM/YYYY - HH" >Data inicial</label>
             <div class="col-sm-4">
