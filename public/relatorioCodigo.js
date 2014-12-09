@@ -323,10 +323,7 @@ window.onload = function() {
 				csv += bus[0] + "," + bus[1] + "," + bus[2] + "," + bus[3] + "," + bus[4] + "," + bus[5] + "," + bus[6] + "\n";
 			});
       var encodedUri = encodeURI(csv);
-			var link = document.createElement("a");
-			link.setAttribute("href", "data:text/csv;charset=utf-8," + encodedUri);
-			link.setAttribute("download", "onibus.csv");
-			link.click();
+			document.location.href = "data:text/csv;charset=utf-8,"+ encodeURI(csv).replace("\n", "%0A");
 		}
 		if(result.lines != undefined) {
 			var csv = "LINHAS\n";
@@ -334,10 +331,7 @@ window.onload = function() {
 				csv += line + "\n";
 			});
       var encodedUri = encodeURI(csv);
-			var link = document.createElement("a");
-			link.setAttribute("href", "data:text/csv;charset=utf-8," + encodedUri);
-			link.setAttribute("download", "linhas.csv");
-			link.click();
+			document.location.href = "data:text/csv;charset=utf-8,"+ encodeURI(csv).replace("\n", "%0A");
 		}
 	});
 }
