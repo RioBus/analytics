@@ -12,3 +12,9 @@
 body {
 	z-index: 1;
 }
+#show-map{
+	
+}
+#gmap_div{
+	height: 600px;	
+}

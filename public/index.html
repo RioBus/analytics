@@ -7,7 +7,8 @@
         <script type="text/javascript" src="js/moment-with-locales.min.js"></script>
         <script type="text/javascript" src="js/bootstrap.min.js"></script>
         <script type="text/javascript" src="js/bootstrap-datetimepicker.min.js"></script>
-        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"></script>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&amp;libraries=geometry&amp;sensor=false&amp;"></script>
+        <script src="https://maps.gstatic.com/cat_js/maps-api-v3/api/js/18/17/intl/pt_br/%7Bmain,geometry%7D.js"></script>
         <script type="text/javascript" src="date-pt-BR.js"></script>
         <script type="text/javascript" src="rawCollectedData.js"></script>
         <script type="text/javascript" src="relatorioCodigo.js"></script>
@@ -15,6 +16,9 @@
         <link href="css/bootstrap-theme.min.css" rel="stylesheet">
         <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
+
+        
+
     </head>
     <body>
     	<nav class="navbar navbar-default" role="navigation">
@@ -45,6 +49,8 @@
                   <li><a data-input-id="line-counter-by-bus">Linhas por quantidade de ônibus</a></li>
                   <li class="divider"></li>
                   <li><a data-input-id="buses-by-speed">Ônibus por faixa de velocidade</a></li>
+                  <li class="divider"></li>
+                  <li><a data-input-id="show-map">Localização das Garagens</a></li>
                 </ul>
               </li>
             </ul>
@@ -173,6 +179,12 @@
             </div>
         </div>
 
+        <div class="form-group col-sm-12" data-form-name="show-map" id="show-map">
+            <div class="col-sm-12" id="gmap_div">
+              <iframe src="http://riob.us/relatorios/garagens.html" width="100%" height="100%"></iframe>
+            </div>
+        </div>
+
         <div class="col-md-offset-1" >
           <div class="radio-inline">
             <label>
@@ -188,7 +200,7 @@
           </div>
         </div>
 
-        <div class="form-group" >
+        <div class="form-group" id="initial-date-container" >
            <label for="initialDate" class="col-sm-2 control-label" data-date-format="DD/MM/YYYY - HH" >Data inicial</label>
             <div class="col-sm-4">
                 <input type="text" class="form-control" id="initialDate" placeholder="Insira a Data e Hora" data-date-format="DD/MM/YYYY - HH:00">
@@ -199,7 +211,7 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" id="final-date-container">
             <div class="col-sm-offset-5 col-sm-6">
               <button type="button" id="button" class="btn btn-success"> Enviar </button>
             </div>
@@ -213,6 +225,7 @@
         </div>
         <form>
         </div>
+        
         </body>
 </html>
 
