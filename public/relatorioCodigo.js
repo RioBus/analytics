@@ -341,10 +341,35 @@ $(function(){
 	endLoadingAnimation();
 	$('.checkbox').hide();
 
+	$(function () {
+	  $('[data-toggle="popover"]').popover()
+	})
+
 	$('ul[role=menu] a').click(function(event) {
 		//When the user clicks on a report, the page animates and show related fields
 		var inputName = $(this).data('input-id');
-		showForm(inputName);
+		var infoText;
+		switch (inputName) {
+			case "empty-lines":
+				infoText = "Relatório gerado a partir das datas selecionadas que mostra os ônibus sem linha estabelecida no gps.";
+				break;
+			case "stopped":
+				infoText = "Relatório gerado a partir das datas selecionadas que mostra os ônibus com a velocidade máxima passada (zero para parados) ao redor de uma área.";
+				break;
+			case "outdated-gps":
+				infoText = "Relatório gerado a partir das datas selecionadas que mostra os ônibus com dados do gps desatualizados de acordo com o número passado.";
+				break;
+			case "line-counter-by-bus":
+				infoText = "Relatório gerado a partir das datas selecionadas que mostra as linhas de ônibus que tem o número de carros rodando dentro da faixa passada.";
+				break;
+			case "buses-by-speed":
+				infoText = "Relatório gerado a partir das datas selecionadas que mostra os ônibus dentro da faixa de velocidade passada.";
+				break;
+			default:
+				infoText = "";
+		}
+
+		showForm(inputName, infoText);
 	});
 
 	$('ul[role=menu] a').first().trigger('click');
@@ -385,7 +410,7 @@ function endLoadingAnimation(){
 	});
 }
 
-function showForm(form){
+function showForm(form, infoText){
 	//Making fade transition to hide previous report and show the other
 
 	var formTitle = $('a[data-input-id='+form+']').html();
@@ -396,6 +421,7 @@ function showForm(form){
 			$('input[value='+form+']').trigger('click')
 		});
 	});
+	$('#info_btn').attr('data-content', infoText);
 	$('#resposta').hide();
 	$('#csv-button').hide();
 	$('#dataRioOut').hide();
