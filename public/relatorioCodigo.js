@@ -387,6 +387,7 @@ function endLoadingAnimation(){
 
 function showForm(form){
 	//Making fade transition to hide previous report and show the other
+
 	var formTitle = $('a[data-input-id='+form+']').html();
 	$('.dropdown-toggle').html( formTitle + '<span class="caret"/>');
 	$('h1').html(formTitle);
@@ -399,6 +400,19 @@ function showForm(form){
 	$('#csv-button').hide();
 	$('#dataRioOut').hide();
 	$('#dados-analisados').hide();
+	
+	if (form == 'show-map'){
+		$('.radio-inline').fadeOut('fast');
+		$('#button').fadeOut('fast');
+		$('#final-date-container').fadeOut('fast');
+		$('#initial-date-container').fadeOut('fast');
+	}
+	else if ($('#initial-date-container').css('display') == 'none'){
+		$('.radio-inline').fadeIn('fast');
+		$('#button').fadeIn('fast');
+		$('#final-date-container').fadeIn('fast');
+		$('#initial-date-container').fadeIn('fast');
+	}
 }
 
 function generateTable(answerArray,report){
