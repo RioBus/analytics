@@ -4,16 +4,24 @@
         <title>RELATORIO</title>
         <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
         <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/moment-with-locales.min.js"></script>
         <script type="text/javascript" src="js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"></script>
+        <script type="text/javascript" src="js/bootstrap-datetimepicker.min.js"></script>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&amp;libraries=geometry&amp;sensor=false&amp;"></script>
+        
         <script type="text/javascript" src="date-pt-BR.js"></script>
         <script type="text/javascript" src="rawCollectedData.js"></script>
         <script type="text/javascript" src="relatorioCodigo.js"></script>
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <link href="css/bootstrap-theme.min.css" rel="stylesheet">
+        <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
+
+        
+
     </head>
     <body>
-    	<nav class="navbar navbar-default" role="navigation">
+      <nav class="navbar navbar-default" role="navigation">
         <div class="container-fluid">
           <!-- Brand and toggle get grouped for better mobile display -->
           <div class="navbar-header">
@@ -34,6 +42,8 @@
                 <ul class="dropdown-menu" role="menu">
                   <li><a data-input-id="empty-lines">Ônibus sem linha</a></li>
                   <li class="divider"></li>
+                  <li><a data-input-id="lines-with-no-buses">Linhas sem ônibus circulando</a></li>
+                  <li class="divider"></li>
                   <li><a data-input-id="stopped">Ônibus parados</a></li>
                   <li class="divider"></li>
                   <li><a data-input-id="outdated-gps">GPS desatualizado</a></li>
@@ -41,6 +51,8 @@
                   <li><a data-input-id="line-counter-by-bus">Linhas por quantidade de ônibus</a></li>
                   <li class="divider"></li>
                   <li><a data-input-id="buses-by-speed">Ônibus por faixa de velocidade</a></li>
+                  <li class="divider"></li>
+                  <li><a data-input-id="show-map">Localização das Garagens</a></li>
                 </ul>
               </li>
             </ul>
@@ -48,7 +60,9 @@
         </div><!-- /.container-fluid -->
       </nav>
 
-       <div class="container"> 
+      <div id="dvLoading" ></div>
+       <div class="container" id="main-container"> 
+
        <h1> Preencha as informações abaixo</h1>
 
        <form class="form-horizontal" role="form">
@@ -58,6 +72,16 @@
             <div class="checkbox">
               <label>
                 <input name="report" type="radio" value="empty-lines" > Ônibus sem linha
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" data-form-name="lines-with-no-buses">
+          <div class="col-sm-offset-1 col-sm-10">
+            <div class="checkbox">
+              <label>
+                <input name="report" type="radio" value="lines-with-no-buses" > Linhas sem ônibus circulando
               </label>
             </div>
           </div>
@@ -94,9 +118,9 @@
     </div>
 
     <div class="form-group" data-form-name="stopped">
-       <label for="minv" class="col-sm-2 control-label">Velocidade Mínima</label>
+       <label for="minv" class="col-sm-2 control-label">Velocidade Máxima</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" id="minv" placeholder="Velocidade Mínima">
+            <input type="text" class="form-control" id="minv" placeholder="Velocidade Máxima">
         </div>
     </div>
     
@@ -167,14 +191,54 @@
             </div>
         </div>
 
-        <div class="form-group">
-            <div class="col-sm-offset-5 col-sm-6">
-              <button type="submit" id="button" class="btn btn-success"> Enviar </button>
+        <div class="form-group col-sm-12" data-form-name="show-map" id="show-map">
+              <iframe src="http://riob.us/relatorios/garagens.html" width="100%" height="100%"></iframe>
+        </div>
+
+        <div class="col-md-offset-1" >
+          <div class="radio-inline">
+            <label>
+              <input type="radio" name="dateNow" id="dateNow" checked>
+              Fazer análise a partir do último dado
+            </label>
+          </div>
+          <div class="radio-inline">
+            <label>
+              <input type="radio" name="dateNow" id="optionsRadios2" value="option2">
+              Fazer análise em um período de tempo
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group" id="initial-date-container" >
+           <label for="initialDate" class="col-sm-2 control-label" data-date-format="DD/MM/YYYY - HH" >Data inicial</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="initialDate" placeholder="Insira a Data e Hora" data-date-format="DD/MM/YYYY - HH:00">
+            </div>
+            <label for="maxs" class="col-sm-2 control-label">Data final</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="finalDate" placeholder="Insira a Data e Hora" data-date-format="DD/MM/YYYY - HH:00">
             </div>
         </div>
-        <p id='resposta'></p>
+
+        <div class="form-group" id="final-date-container">
+            <div class="col-sm-offset-5 col-sm-6">
+              <button type="button" id="button" class="btn btn-success"> Enviar </button>
+              <button type="button" id="info_btn" class="btn btn-info btn-xs" data-container="body" data-toggle="popover" data-placement="right" data-content="" data-trigger="hover">
+                  Info
+                </button>
+            </div>
+        </div>
+        <div id='dataRioOut' style="display:none">O servidor da prefeitura encontra-se com problemas. Estamos mostrando o resultado da data:  </div>
+        <button type="button" id="csv-button" class="btn btn-success" style="display:none"> Download CSV </button>
+        <div id='dados-analisados'></div>
+        <div id='resposta' >
+        <h2> </h2>
+        <table class='table table-bordered'><thead></thead><tbody></tbody></table>
+        </div>
         <form>
         </div>
+        
         </body>
 </html>
 

@@ -1,8 +1,8 @@
 {
 	"dataQueuer": {
-		"host": "riob.us",
+		"host": "rest.riob.us",
 		"path": "/all",
-		"port": 81,
-		"intervalTime": 60000
+		"port": 80,
+		"intervalTime": 10000
 	}
 }

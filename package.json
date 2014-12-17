@@ -1,0 +1,21 @@
+{
+  "name": "riobus-analytics",
+  "version": "0.1.1",
+  "description": "Riob.us analytics",
+  "main": "server.js",
+  "scripts": {
+    "start": "node riob-us/server.js"
+  },
+  "dependencies": {
+    "express": "~4.10.x",
+    "moment": "*"
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
+  "keywords": [
+    "node",
+    "riobus"
+  ],
+  "license": "GNU GPL2"
+}
