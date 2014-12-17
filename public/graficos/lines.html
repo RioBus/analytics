@@ -1,0 +1,121 @@
+<!doctype>
+<head>
+	<link type="text/css" rel="stylesheet" href="../src/css/graph.css">
+	<link type="text/css" rel="stylesheet" href="../src/css/detail.css">
+	<link type="text/css" rel="stylesheet" href="../src/css/legend.css">
+	<link type="text/css" rel="stylesheet" href="css/lines.css">
+	<style>
+		#texto {
+			height: 200px;
+		}
+	</style>
+	<script src="js/jquery-2.1.1.min.js"></script>
+	<script src="js/papaparse.min.js"></script>
+	<script src="../rickshaw/vendor/d3.v3.js"></script>
+	<script src="../rickshaw/rickshaw.js"></script>
+</head>
+<body>
+
+<div id="chart_container">
+	<div id="chart"  style="margin: 10px"></div>
+	<div id="legend_container"> 
+		<div id="smoother" title="Smoothing"></div>
+		<div id="legend"></div>		
+	</div>
+	<div id="slider"></div>
+</div>
+<div id="texto">
+	<p>Gr&aacute;fico de velocidade m&eacute;dia por regi&atilde;o durante dias de semana</p>
+	<p>Eixo X: Horas do dia</p>
+	<p>Eixo Y: Velocidade m&eacute;dia em Km/h</p>
+</div> 
+<div id="mapa"><image src="./images/mapa.jpg" /></div>
+
+<script>
+
+// set up our data series with 50 random data points
+
+var internorte = [{ x: 0, y: 25.35996680388368}, { x: 1, y: 25.242759717936636}, { x: 2, y: 20.623920550459037}, { x: 3, y: 13.22392055}, { x: 4, y: 6.343421365691156}, { x: 5, y: 15.96170504573943}, { x: 6, y: 25.655791993568993}, { x: 7, y: 28.265751748814093}, { x: 8, y: 25.1514499773333}, { x: 9, y: 22.46887022414042}, { x: 10, y: 22.47175811092756}, { x: 11, y: 22.08333291768416}, { x: 12, y: 22.41553315500372}, { x: 13, y: 22.449767577628954}, { x: 14, y: 22.064338569656744}, { x: 15, y: 22.23237818728055}, { x: 16, y: 22.30061181293407}, { x: 17, y: 21.622020304224705}, { x: 18, y: 20.5443243970388}, { x: 19, y: 19.603420982124884}, { x: 20, y: 19.798719538500517}, { x: 21, y: 21.355768919267742}, { x: 22, y: 23.292800598218314}, { x: 23, y: 24.401660081548716}];
+var transcarioca = [{ x: 0, y: 27.676618523417368}, { x: 1, y: 28.548838295691333}, { x: 2, y: 23.327891038321}, { x: 3, y: 17.2239231}, { x: 4, y: 8.030032942898961}, { x: 5, y: 22.209095654501574}, { x: 6, y: 29.593679168063776}, { x: 7, y: 31.751954180977492}, { x: 8, y: 29.132228726781495}, { x: 9, y: 26.229655739858256}, { x: 10, y: 25.43264886426267}, { x: 11, y: 24.760826190898555}, { x: 12, y: 24.765176766579785}, { x: 13, y: 25.069484285985045}, { x: 14, y: 24.819468828325874}, { x: 15, y: 24.683394945660677}, { x: 16, y: 24.78414901474013}, { x: 17, y: 23.88553483682265}, { x: 18, y: 23.441350566683777}, { x: 19, y: 22.3733924391126}, { x: 20, y: 22.38041148094279}, { x: 21, y: 23.477082209038624}, { x: 22, y: 25.02047820846839}, { x: 23, y: 26.489417734642732}];
+var santacruz = [{ x: 0, y: 27.551451210744524}, { x: 1, y: 26.964622589654386}, { x: 2, y: 23.433350056115135}, { x: 3, y: 15.22392055}, { x: 4, y: 6.4957136172203995}, { x: 5, y: 20.670722123744333}, { x: 6, y: 29.341191392798716}, { x: 7, y: 31.497802093850307}, { x: 8, y: 29.43296179642722}, { x: 9, y: 27.305649906051144}, { x: 10, y: 26.49435652158278}, { x: 11, y: 25.595548671149448}, { x: 12, y: 25.379414230665915}, { x: 13, y: 25.303982177848344}, { x: 14, y: 25.074034508738855}, { x: 15, y: 25.105739157752943}, { x: 16, y: 24.923907130887745}, { x: 17, y: 24.631631651381525}, { x: 18, y: 24.02294694902981}, { x: 19, y: 23.22597345347134}, { x: 20, y: 23.126461323498074}, { x: 21, y: 24.214556018561165}, { x: 22, y: 25.883088628622765}, { x: 23, y: 27.011758520704007}];
+var intersul = [{ x: 0, y: 19.756919811963392}, { x: 1, y: 17.947775072189803}, { x: 2, y: 12.86993683089071}, { x: 3, y: 11.22392055}, { x: 4, y: 9.197665818822143}, { x: 5, y: 9.837161473996707}, { x: 6, y: 16.97706888964908}, { x: 7, y: 23.96594430461887}, { x: 8, y: 22.715614778769716}, { x: 9, y: 20.232269564946964}, { x: 10, y: 18.79846529419224}, { x: 11, y: 18.396260676508092}, { x: 12, y: 18.582095215579404}, { x: 13, y: 18.747735947243243}, { x: 14, y: 18.010949922446592}, { x: 15, y: 18.151880752863118}, { x: 16, y: 17.94099724952836}, { x: 17, y: 17.069344453023263}, { x: 18, y: 16.106726189250445}, { x: 19, y: 15.913251346895972}, { x: 20, y: 16.029521923553038}, { x: 21, y: 17.114744605573488}, { x: 22, y: 18.110159341980168}, { x: 23, y: 19.01116440565426}];
+
+var graph = new Rickshaw.Graph( {
+	element: document.getElementById("chart"),
+	width: 960,
+	height: 500,
+	renderer: 'line',
+	series: [
+		{
+			color: 'green',
+			data: internorte,
+			name: 'Internorte'
+		},
+		{
+			color: 'blue',
+			data: transcarioca,
+			name: 'Transcarioca'
+		},
+		{
+			color: 'red',
+			data: santacruz,
+			name: 'Santa Cruz'
+		},
+		{
+			color: 'yellow',
+			data: intersul,
+			name: 'Intersul'
+		}
+	]
+} );
+
+
+var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+	graph: graph	
+} );
+
+var legend = new Rickshaw.Graph.Legend( {
+	graph: graph,
+	element: document.getElementById('legend')
+
+} );
+
+var shelving = new Rickshaw.Graph.Behavior.Series.Toggle( {
+	graph: graph,
+	legend: legend
+} );
+
+var y_ticks = new Rickshaw.Graph.Axis.Y( {
+	graph: graph,
+	orientation: 'right',
+	element: document.getElementById('y_axis')
+} );
+
+var x_ticks = new Rickshaw.Graph.Axis.X( {
+	graph: graph,
+	element: document.getElementById('x_axis')
+} );
+
+graph.render();
+
+
+function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+function compare(a,b) {
+  if (a.x < b.x)
+     return -1;
+  if (a.x > b.x)
+    return 1;
+  return 0;
+}
+
+</script>
+
+</body>

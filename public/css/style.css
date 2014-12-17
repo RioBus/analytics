@@ -17,3 +17,13 @@ body {
 #show-map{
 	height: 600px;	
 }
+
+#show-graph1 {
+	height: 1200px;
+	z-index: 99;
+}
+
+iframe {
+	height: 1200px;
+	width: 1200px;
+}

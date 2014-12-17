@@ -530,7 +530,7 @@ function showForm(form, infoText){
 	$('#dataRioOut').hide();
 	$('#dados-analisados').hide();
 	
-	if (form == 'show-map'){
+	if (form == 'show-map' || form == 'show-graph1'){
 		$('.radio-inline').fadeOut('fast');
 		$('#button').fadeOut('fast');
 		$('#final-date-container').fadeOut('fast');

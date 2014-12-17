@@ -53,6 +53,8 @@
                   <li><a data-input-id="buses-by-speed">Ônibus por faixa de velocidade</a></li>
                   <li class="divider"></li>
                   <li><a data-input-id="show-map">Localização das Garagens</a></li>
+				  <li class="divider"></li>
+                  <li><a data-input-id="show-graph1">Média de velocidade por região</a></li>
                 </ul>
               </li>
             </ul>
@@ -99,28 +101,28 @@
     <div class="form-group" data-form-name="stopped">
        <label for="lat" class="col-sm-2 control-label">Latitude</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" id="lat" placeholder="Latitude">
+            <input type="text" class="form-control" id="lat" placeholder="Latitude (ex. -22.8)">
         </div>
     </div>
 
     <div class="form-group" data-form-name="stopped">
        <label for="lng" class="col-sm-2 control-label">Longitude</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" id="lng" placeholder="Longitude">
+            <input type="text" class="form-control" id="lng" placeholder="Longitude (ex. -43.2)">
         </div>
     </div>
 
     <div class="form-group" data-form-name="stopped">
        <label for="r" class="col-sm-2 control-label">Raio</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" id="r" placeholder="Raio">
+            <input type="text" class="form-control" id="r" placeholder="Raio (em metros)">
         </div>
     </div>
 
     <div class="form-group" data-form-name="stopped">
        <label for="minv" class="col-sm-2 control-label">Velocidade Máxima</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" id="minv" placeholder="Velocidade Máxima">
+            <input type="text" class="form-control" id="minv" placeholder="Velocidade Máxima (em Km/h)">
         </div>
     </div>
     
@@ -152,11 +154,11 @@
         </div>
 
         <div class="form-group" data-form-name="line-counter-by-bus">
-           <label for="minq" class="col-sm-2 control-label">Qnt mínima de ônibus</label>
+           <label for="minq" class="col-sm-2 control-label">Quantidade mínima de ônibus</label>
             <div class="col-sm-4">
                 <input type="text" class="form-control" id="minq" placeholder="Quantidade mínima de ônibus">
             </div>
-            <label for="maxq" class="col-sm-2 control-label">Qnt máxima de ônibus</label>
+            <label for="maxq" class="col-sm-2 control-label">Quantidade máxima de ônibus</label>
             <div class="col-sm-4">
                 <input type="text" class="form-control" id="maxq" placeholder="Quantidade máxima de ônibus">
             </div>
@@ -176,11 +178,11 @@
         <div class="form-group" data-form-name="buses-by-speed">
            <label for="mins" class="col-sm-2 control-label">Velocidade Mínima</label>
             <div class="col-sm-4">
-                <input type="text" class="form-control" id="mins" placeholder="Velocidade Mínima">
+                <input type="text" class="form-control" id="mins" placeholder="Velocidade Mínima (em Km/h)">
             </div>
             <label for="maxs" class="col-sm-2 control-label">Velocidade Máxima</label>
             <div class="col-sm-4">
-                <input type="text" class="form-control" id="maxs" placeholder="Velocidade Máxima">
+                <input type="text" class="form-control" id="maxs" placeholder="Velocidade Máxima (em Km/h)">
             </div>
         </div>  
 
@@ -192,7 +194,14 @@
         </div>
 
         <div class="form-group col-sm-12" data-form-name="show-map" id="show-map">
+			<p>Inferência automática através da análise de ônibus parados entre 2 e 4 da manhã</p>
               <iframe src="http://riob.us/relatorios/garagens.html" width="100%" height="100%"></iframe>
+        </div>
+		
+		<div class="form-group col-sm-12" data-form-name="show-graph1" id="show-graph1">
+            <div class="col-sm-12" id="graph1_div">
+              <iframe src="http://riob.us/relatorios/graficos/lines.html" width="100%" height="100%"></iframe>
+            </div>
         </div>
 
         <div class="col-md-offset-1" >

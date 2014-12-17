@@ -1,0 +1,577 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>GPS data</title>
+		<base target="_top"></base>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+		<meta name="geo.position" content="-22.9132572; -43.6628216" />
+		<meta name="ICBM" content="-22.9132572, -43.6628216" />
+	</head>
+	<body style="margin:0px;">
+		<script type="text/javascript">
+			var google_api_key = ''; // Your project's Google Maps API key goes here (https://code.google.com/apis/console)
+			document.writeln('<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&amp;libraries=geometry&amp;sensor=false&amp;'+((self.google_api_key&&document.location.toString().indexOf('file://')!=0)?'key='+google_api_key:'')+'"><'+'/script>');
+		</script>
+		
+		<!--
+			If you want to transplant this map into another Web page, by far the best method is to
+			simply include it in a IFRAME tag (see http://www.gpsvisualizer.com/faq.html#google_html).
+			But, if you must paste the code into another page, be sure to include all of these parts:
+			   1. The "div" tags that contain the map and its widgets, below
+			   2. Three sections of JavaScript code:
+			      a. The Google code (maps.google.com or googleapis.com) code, above
+			      b. "gv_options" and the code that calls a .js file on maps.gpsvisualizer.com
+			      c. The "GV_Map" function, which contains all the geographic info for the map
+		-->
+		<div style="margin-left:0px; margin-right:0px; margin-top:0px; margin-bottom:0px;">
+			<div id="gmap_div" style="width:700px; height:350px; margin:0px; margin-right:12px; background-color:#F0F0F0; float:left; overflow:hidden;">
+				<p align="center" style="font:10px Arial;">This map was created using <a target="_blank" href="http://www.gpsvisualizer.com/">GPS Visualizer</a>'s do-it-yourself geographic utilities.<br /><br />Please wait while the map data loads...</p>
+			</div>
+				
+			<div id="gv_infobox" class="gv_infobox" style="font:11px Arial; border:solid #666666 1px; background:#ffffff; padding:4px; overflow:auto; display:none; max-width:400px;">
+				<!-- Although GPS Visualizer didn't create an legend/info box with your map, you can use this space for something else if you'd like; enable it by setting gv_options.infobox_options.enabled to true -->
+			</div>
+
+
+
+			<div id="gv_marker_list" class="gv_marker_list" style="background:#ffffff; overflow:auto; display:none;"><!-- --></div>
+
+			<div id="gv_clear_margins" style="height:0px; clear:both;"><!-- clear the "float" --></div>
+		</div>
+
+		
+		<!-- begin GPS Visualizer setup script (must come after maps.google.com code) -->
+		<script type="text/javascript">
+			/* Global variables used by the GPS Visualizer functions (20141210112605): */
+			gv_options = {};
+			
+			// basic map parameters:
+			gv_options.center = [-22.91325725,-43.6628216475272];  // [latitude,longitude] - be sure to keep the square brackets
+			gv_options.zoom = 9;  // higher number means closer view; can also be 'auto' for automatic zoom/center based on map elements
+			gv_options.map_type = 'GV_HYBRID';  // popular map_type choices are 'GV_STREET', 'GV_SATELLITE', 'GV_HYBRID', 'GV_TERRAIN', 'GV_TOPO_US', 'GV_TOPO_WORLD', 'GV_OSM'
+			gv_options.map_opacity = 1.00;  // number from 0 to 1
+			gv_options.full_screen = true;  // true|false: should the map fill the entire page (or frame)?
+			gv_options.width = 700;  // width of the map, in pixels
+			gv_options.height = 350;  // height of the map, in pixels
+			
+			gv_options.map_div = 'gmap_div';  // the name of the HTML "div" tag containing the map itself; usually 'gmap_div'
+			gv_options.doubleclick_zoom = true;  // true|false: zoom in when mouse is double-clicked?
+			gv_options.doubleclick_center = true;  // true|false: re-center the map on the point that was double-clicked?
+			gv_options.mousewheel_zoom = true; // true|false; or 'reverse' for down=in and up=out
+			gv_options.autozoom_adjustment = 0;
+			gv_options.centering_options = { 'open_info_window':true, 'partial_match':true, 'center_key':'center', 'default_zoom':null } // URL-based centering (e.g., ?center=name_of_marker&zoom=14)
+			gv_options.tilt = false; // true|false: allow Google to show 45-degree tilted aerial imagery?
+			gv_options.street_view = false; // true|false: allow Google Street View on the map
+			gv_options.animated_zoom = false; // true|false: may or may not work properly
+				
+			// widgets on the map:
+			gv_options.zoom_control = 'large'; // 'large'|'small'|'none'
+			gv_options.recenter_button = true; // true|false: is there a 'double-click to recenter' option in the zoom control?
+			gv_options.scale_control = true; // true|false
+			gv_options.center_coordinates = true;  // true|false: show a "center coordinates" box and crosshair?
+			gv_options.mouse_coordinates = false;  // true|false: show a "mouse coordinates" box?
+			gv_options.crosshair_hidden = true;  // true|false: hide the crosshair initially?
+			gv_options.map_opacity_control = true;  // true|false
+			gv_options.map_type_control = {};  // widget to change the background map
+			  gv_options.map_type_control.style = 'menu';  // 'menu'|'none'
+			  gv_options.map_type_control.filter = false;  // true|false: when map loads, are irrelevant maps ignored?
+			  gv_options.map_type_control.excluded = [];  // comma-separated list of quoted map IDs that will never show in the list ('included' also works)
+			gv_options.disable_google_pois = false;  // true|false: if you disable clickable POIs, you also lose the labels on parks, airports, etc.
+			gv_options.measurement_tools = { visible:false, distance_color:'', area_color:'', position:[] };
+			gv_options.infobox_options = {}; // options for a floating info box (id="gv_infobox"), which can contain anything
+			  gv_options.infobox_options.enabled = true;  // true|false: enable or disable the info box altogether
+			  gv_options.infobox_options.position = ['LEFT_TOP',76,6];  // [Google anchor name, relative x, relative y]
+			  gv_options.infobox_options.draggable = true;  // true|false: can it be moved around the screen?
+			  gv_options.infobox_options.collapsible = true;  // true|false: can it be collapsed by double-clicking its top bar?
+
+
+			// marker-related options:
+			gv_options.default_marker = { color:'red',icon:'googlemini',scale:1 }; // icon can be a URL, but be sure to also include size:[w,h] and optionally anchor:[x,y]
+			gv_options.marker_tooltips = true; // do the names of the markers show up when you mouse-over them?
+			gv_options.marker_shadows = true; // true|false: do the standard markers have "shadows" behind them?
+			gv_options.marker_link_target = '_blank'; // the name of the window or frame into which markers' URLs will load
+			gv_options.info_window_width = 0;  // in pixels, the width of the markers' pop-up info "bubbles" (can be overridden by 'window_width' in individual markers)
+			gv_options.thumbnail_width = 0;  // in pixels, the width of the markers' thumbnails (can be overridden by 'thumbnail_width' in individual markers)
+			gv_options.photo_size = [0,0];  // in pixels, the size of the photos in info windows (can be overridden by 'photo_width' or 'photo_size' in individual markers)
+			gv_options.hide_labels = false;  // true|false: hide labels when map first loads?
+			gv_options.labels_behind_markers = false; // true|false: are the labels behind other markers (true) or in front of them (false)?
+			gv_options.label_offset = [0,0];  // [x,y]: shift all markers' labels (positive numbers are right and down)
+			gv_options.label_centered = false;  // true|false: center labels with respect to their markers?  (label_left is also a valid option.)
+			gv_options.driving_directions = false;  // put a small "driving directions" form in each marker's pop-up window? (override with dd:true or dd:false in a marker's options)
+			gv_options.garmin_icon_set = 'gpsmap'; // 'gpsmap' are the small 16x16 icons; change it to '24x24' for larger icons
+			gv_options.marker_list_options = {};  // options for a dynamically-created list of markers
+			  gv_options.marker_list_options.enabled = true;  // true|false: enable or disable the marker list altogether
+			  gv_options.marker_list_options.floating = true;  // is the list a floating box inside the map itself?
+			  gv_options.marker_list_options.position = ['RIGHT_BOTTOM',6,38];  // floating list only: position within map
+			  gv_options.marker_list_options.min_width = 160; // minimum width, in pixels, of the floating list
+			  gv_options.marker_list_options.max_width = 160;  // maximum width
+			  gv_options.marker_list_options.min_height = 0;  // minimum height, in pixels, of the floating list
+			  gv_options.marker_list_options.max_height = 135;  // maximum height
+			  gv_options.marker_list_options.draggable = true;  // true|false, floating list only: can it be moved around the screen?
+			  gv_options.marker_list_options.collapsible = true;  // true|false, floating list only: can it be collapsed by double-clicking its top bar?
+			  gv_options.marker_list_options.include_tickmarks = false;  // true|false: are distance/time tickmarks included in the list?
+			  gv_options.marker_list_options.include_trackpoints = false;  // true|false: are "trackpoint" markers included in the list?
+			  gv_options.marker_list_options.dividers = false;  // true|false: will a thin line be drawn between each item in the list?
+			  gv_options.marker_list_options.desc = false;  // true|false: will the markers' descriptions be shown below their names in the list?
+			  gv_options.marker_list_options.icons = true;  // true|false: should the markers' icons appear to the left of their names in the list?
+			  gv_options.marker_list_options.thumbnails = false;  // true|false: should markers' thumbnails be shown in the list?
+			  gv_options.marker_list_options.folders_collapsed = false;  // true|false: do folders in the list start out in a collapsed state?
+			  gv_options.marker_list_options.folders_hidden = false;  // true|false: do folders in the list start out in a hidden state?
+			  gv_options.marker_list_options.collapsed_folders = []; // an array of folder names
+			  gv_options.marker_list_options.hidden_folders = []; // an array of folder names
+			  gv_options.marker_list_options.count_folder_items = false;  // true|false: list the number of items in each folder?
+			  gv_options.marker_list_options.wrap_names = true;  // true|false: should marker's names be allowed to wrap onto more than one line?
+			  gv_options.marker_list_options.unnamed = '[unnamed]';  // what 'name' should be assigned to  unnamed markers in the list?
+			  gv_options.marker_list_options.colors = false;  // true|false: should the names/descs of the points in the list be colorized the same as their markers?
+			  gv_options.marker_list_options.default_color = '';  // default HTML color code for the names/descs in the list
+			  gv_options.marker_list_options.limit = 0;  // how many markers to show in the list; 0 for no limit
+			  gv_options.marker_list_options.center = false;  // true|false: does the map center upon a marker when you click its name in the list?
+			  gv_options.marker_list_options.zoom = false;  // true|false: does the map zoom to a certain level when you click on a marker's name in the list?
+			  gv_options.marker_list_options.zoom_level = 14;  // if 'zoom' is true, what level should the map zoom to?
+			  gv_options.marker_list_options.info_window = true;  // true|false: do info windows pop up when the markers' names are clicked in the list?
+			  gv_options.marker_list_options.url_links = false;  // true|false: do the names in the list become instant links to the markers' URLs?
+			  gv_options.marker_list_options.toggle = false;  // true|false: does a marker disappear if you click on its name in the list?
+			  gv_options.marker_list_options.help_tooltips = false;  // true|false: do "tooltips" appear on marker names that tell you what happens when you click?
+			  gv_options.marker_list_options.id = 'gv_marker_list';  // id of a DIV tag that holds the list
+			  gv_options.marker_list_options.header = ''; // HTML code; be sure to put backslashes in front of any single quotes, and don't include any line breaks
+			  gv_options.marker_list_options.footer = ''; // HTML code
+			gv_options.marker_filter_options = {};  // options for removing waypoints that are out of the current view
+			  gv_options.marker_filter_options.enabled = false;  // true|false: should out-of-range markers be removed?
+			  gv_options.marker_filter_options.movement_threshold = 8;  // in pixels, how far the map has to move to trigger filtering
+			  gv_options.marker_filter_options.limit = 0;  // maximum number of markers to display on the map; 0 for no limit
+			  gv_options.marker_filter_options.update_list = true;  // true|false: should the marker list be updated with only the filtered markers?
+			  gv_options.marker_filter_options.sort_list_by_distance = false;  // true|false: should the marker list be sorted by distance from the center of the map?
+			  gv_options.marker_filter_options.min_zoom = 0;  // below this zoom level, don't show any markers at all
+			  gv_options.marker_filter_options.zoom_message = '';  // message to put in the marker list if the map is below the min_zoom threshold
+			gv_options.synthesize_fields = {}; // for example: {label:'{name}'} would cause all markers' names to become visible labels
+				
+			
+			// Load GPS Visualizer's Google Maps functions (this must be loaded AFTER gv_options are set):
+			document.writeln('<script src="http://maps.gpsvisualizer.com/google_maps/functions3.js" type="text/javascript"><'+'/script>');
+			
+		</script>
+		
+		<style type="text/css">
+			/* Put any custom style definitions here (e.g., .gv_marker_info_window, .gv_marker_info_window_name, .gv_marker_list_item, .gv_tooltip, .gv_label, etc.) */
+			#gmap_div .gv_marker_info_window {
+				font-size:11px !important;
+			}
+			#gmap_div .gv_label {
+				background:#333333; border:1px solid black; padding:1px;
+				color:white; font:9px Verdana,sans-serif !important; font-weight:normal !important;
+				opacity:0.80; filter:alpha(opacity=80);
+			}
+			
+		</style>
+		
+		<!-- end GPSV setup script and styles; begin map-drawing script (they must be separate) -->
+		<script type="text/javascript">
+			function GV_Map() {
+			  
+				GV_Setup_Map();
+				
+				
+				
+				GV_Draw_Marker({lat:-22.8894318,lon:-43.2922658,name:'10',desc:'10',label:'10',color:'',icon:'',folder:'10'});
+				GV_Draw_Marker({lat:-22.8747403,lon:-43.2416335,name:'110',desc:'110',label:'110',color:'',icon:'',folder:'110'});
+				GV_Draw_Marker({lat:-22.9024834,lon:-43.1966323,name:'119',desc:'119',label:'119',color:'',icon:'',folder:'119'});
+				GV_Draw_Marker({lat:-22.9021560,lon:-43.2472704,name:'120',desc:'120',label:'120',color:'',icon:'',folder:'120'});
+				GV_Draw_Marker({lat:-22.8747319,lon:-43.2421043,name:'121',desc:'121',label:'121',color:'',icon:'',folder:'121'});
+				GV_Draw_Marker({lat:-22.9043912,lon:-43.1917738,name:'123',desc:'123',label:'123',color:'',icon:'',folder:'123'});
+				GV_Draw_Marker({lat:-22.9297839,lon:-43.2546462,name:'124',desc:'124',label:'124',color:'',icon:'',folder:'124'});
+				GV_Draw_Marker({lat:-22.9295922,lon:-43.2538004,name:'125',desc:'125',label:'125',color:'',icon:'',folder:'125'});
+				GV_Draw_Marker({lat:-22.8743383,lon:-43.2421017,name:'128',desc:'128',label:'128',color:'',icon:'',folder:'128'});
+				GV_Draw_Marker({lat:-22.9048215,lon:-43.2496696,name:'130',desc:'130',label:'130',color:'',icon:'',folder:'130'});
+				GV_Draw_Marker({lat:-22.9200555,lon:-43.2334669,name:'131',desc:'131',label:'131',color:'',icon:'',folder:'131'});
+				GV_Draw_Marker({lat:-22.8747868,lon:-43.2416678,name:'132',desc:'132',label:'132',color:'',icon:'',folder:'132'});
+				GV_Draw_Marker({lat:-22.9016582,lon:-43.1965283,name:'133',desc:'133',label:'133',color:'',icon:'',folder:'133'});
+				GV_Draw_Marker({lat:-22.9019111,lon:-43.1966821,name:'136',desc:'136',label:'136',color:'',icon:'',folder:'136'});
+				GV_Draw_Marker({lat:-22.9026800,lon:-43.1960029,name:'154',desc:'154',label:'154',color:'',icon:'',folder:'154'});
+				GV_Draw_Marker({lat:-22.9022908,lon:-43.1957684,name:'155',desc:'155',label:'155',color:'',icon:'',folder:'155'});
+				GV_Draw_Marker({lat:-22.9203268,lon:-43.2556295,name:'157',desc:'157',label:'157',color:'',icon:'',folder:'157'});
+				GV_Draw_Marker({lat:-22.9020833,lon:-43.1968073,name:'161',desc:'161',label:'161',color:'',icon:'',folder:'161'});
+				GV_Draw_Marker({lat:-22.9022530,lon:-43.1964514,name:'162',desc:'162',label:'162',color:'',icon:'',folder:'162'});
+				GV_Draw_Marker({lat:-22.8749141,lon:-43.2415105,name:'170',desc:'170',label:'170',color:'',icon:'',folder:'170'});
+				GV_Draw_Marker({lat:-22.9065530,lon:-43.2606022,name:'172',desc:'172',label:'172',color:'',icon:'',folder:'172'});
+				GV_Draw_Marker({lat:-22.8855105,lon:-43.2245540,name:'177',desc:'177',label:'177',color:'',icon:'',folder:'177'});
+				GV_Draw_Marker({lat:-22.8581670,lon:-43.2449026,name:'178',desc:'178',label:'178',color:'',icon:'',folder:'178'});
+				GV_Draw_Marker({lat:-22.9018421,lon:-43.1965238,name:'180',desc:'180',label:'180',color:'',icon:'',folder:'180'});
+				GV_Draw_Marker({lat:-22.9018827,lon:-43.1963896,name:'183',desc:'183',label:'183',color:'',icon:'',folder:'183'});
+				GV_Draw_Marker({lat:-22.9018337,lon:-43.1967478,name:'184',desc:'184',label:'184',color:'',icon:'',folder:'184'});
+				GV_Draw_Marker({lat:-22.9108468,lon:-43.2700519,name:'201',desc:'201',label:'201',color:'',icon:'',folder:'201'});
+				GV_Draw_Marker({lat:-22.8702925,lon:-43.2493406,name:'2014',desc:'2014',label:'2014',color:'',icon:'',folder:'2014'});
+				GV_Draw_Marker({lat:-22.8702853,lon:-43.2492860,name:'2017',desc:'2017',label:'2017',color:'',icon:'',folder:'2017'});
+				GV_Draw_Marker({lat:-22.8705992,lon:-43.2495148,name:'2018',desc:'2018',label:'2018',color:'',icon:'',folder:'2018'});
+				GV_Draw_Marker({lat:-22.8686096,lon:-43.2899198,name:'209',desc:'209',label:'209',color:'',icon:'',folder:'209'});
+				GV_Draw_Marker({lat:-22.8683266,lon:-43.2914872,name:'210',desc:'210',label:'210',color:'',icon:'',folder:'210'});
+				GV_Draw_Marker({lat:-22.9527038,lon:-43.3489430,name:'2110',desc:'2110',label:'2110',color:'',icon:'',folder:'2110'});
+				GV_Draw_Marker({lat:-22.9438445,lon:-43.3484334,name:'2111',desc:'2111',label:'2111',color:'',icon:'',folder:'2111'});
+				GV_Draw_Marker({lat:-22.9526314,lon:-43.3485867,name:'2114',desc:'2114',label:'2114',color:'',icon:'',folder:'2114'});
+				GV_Draw_Marker({lat:-22.9527001,lon:-43.3492030,name:'2115',desc:'2115',label:'2115',color:'',icon:'',folder:'2115'});
+				GV_Draw_Marker({lat:-22.9298475,lon:-43.2542997,name:'217',desc:'217',label:'217',color:'',icon:'',folder:'217'});
+				GV_Draw_Marker({lat:-22.9290537,lon:-43.2543421,name:'220',desc:'220',label:'220',color:'',icon:'',folder:'220'});
+				GV_Draw_Marker({lat:-22.9195644,lon:-43.2558873,name:'222',desc:'222',label:'222',color:'',icon:'',folder:'222'});
+				GV_Draw_Marker({lat:-22.9022167,lon:-43.2994537,name:'2251',desc:'2251',label:'2251',color:'',icon:'',folder:'2251'});
+				GV_Draw_Marker({lat:-22.9291429,lon:-43.2534109,name:'226',desc:'226',label:'226',color:'',icon:'',folder:'226'});
+				GV_Draw_Marker({lat:-22.9290337,lon:-43.2538575,name:'229',desc:'229',label:'229',color:'',icon:'',folder:'229'});
+				GV_Draw_Marker({lat:-22.8072094,lon:-43.3668516,name:'2295',desc:'2295',label:'2295',color:'',icon:'',folder:'2295'});
+				GV_Draw_Marker({lat:-22.8168490,lon:-43.3890915,name:'2302',desc:'2302',label:'2302',color:'',icon:'',folder:'2302'});
+				GV_Draw_Marker({lat:-22.9172538,lon:-43.6311758,name:'2303',desc:'2303',label:'2303',color:'',icon:'',folder:'2303'});
+				GV_Draw_Marker({lat:-22.8170218,lon:-43.3915306,name:'2305',desc:'2305',label:'2305',color:'',icon:'',folder:'2305'});
+				GV_Draw_Marker({lat:-22.9194113,lon:-43.6434706,name:'2307',desc:'2307',label:'2307',color:'',icon:'',folder:'2307'});
+				GV_Draw_Marker({lat:-22.9512939,lon:-44.1603485,name:'2308',desc:'2308',label:'2308',color:'',icon:'',folder:'2308'});
+				GV_Draw_Marker({lat:-22.9190970,lon:-43.6440559,name:'2309',desc:'2309',label:'2309',color:'',icon:'',folder:'2309'});
+				GV_Draw_Marker({lat:-22.8940142,lon:-43.4893538,name:'2310',desc:'2310',label:'2310',color:'',icon:'',folder:'2310'});
+				GV_Draw_Marker({lat:-22.9022195,lon:-43.2888755,name:'232',desc:'232',label:'232',color:'',icon:'',folder:'232'});
+				GV_Draw_Marker({lat:-23.0205509,lon:-43.4828514,name:'2329',desc:'2329',label:'2329',color:'',icon:'',folder:'2329'});
+				GV_Draw_Marker({lat:-22.9193968,lon:-43.6434424,name:'2331',desc:'2331',label:'2331',color:'',icon:'',folder:'2331'});
+				GV_Draw_Marker({lat:-22.8943814,lon:-43.5325983,name:'2332',desc:'2332',label:'2332',color:'',icon:'',folder:'2332'});
+				GV_Draw_Marker({lat:-22.9442563,lon:-43.3868886,name:'2333',desc:'2333',label:'2333',color:'',icon:'',folder:'2333'});
+				GV_Draw_Marker({lat:-22.8945616,lon:-43.5335460,name:'2334',desc:'2334',label:'2334',color:'',icon:'',folder:'2334'});
+				GV_Draw_Marker({lat:-22.9331131,lon:-43.5635401,name:'2335',desc:'2335',label:'2335',color:'',icon:'',folder:'2335'});
+				GV_Draw_Marker({lat:-22.8852672,lon:-43.4001623,name:'2336',desc:'2336',label:'2336',color:'',icon:'',folder:'2336'});
+				GV_Draw_Marker({lat:-22.9176281,lon:-43.6177844,name:'2337',desc:'2337',label:'2337',color:'',icon:'',folder:'2337'});
+				GV_Draw_Marker({lat:-22.8942618,lon:-43.5326285,name:'2338',desc:'2338',label:'2338',color:'',icon:'',folder:'2338'});
+				GV_Draw_Marker({lat:-22.8862986,lon:-43.5563581,name:'2339',desc:'2339',label:'2339',color:'',icon:'',folder:'2339'});
+				GV_Draw_Marker({lat:-22.8147982,lon:-43.1873650,name:'2342',desc:'2342',label:'2342',color:'',icon:'',folder:'2342'});
+				GV_Draw_Marker({lat:-22.8153366,lon:-43.1876878,name:'2343',desc:'2343',label:'2343',color:'',icon:'',folder:'2343'});
+				GV_Draw_Marker({lat:-22.8147141,lon:-43.1885116,name:'2344',desc:'2344',label:'2344',color:'',icon:'',folder:'2344'});
+				GV_Draw_Marker({lat:-22.8657216,lon:-43.3438284,name:'2345',desc:'2345',label:'2345',color:'',icon:'',folder:'2345'});
+				GV_Draw_Marker({lat:-22.8156238,lon:-43.3868696,name:'2346',desc:'2346',label:'2346',color:'',icon:'',folder:'2346'});
+				GV_Draw_Marker({lat:-22.8966281,lon:-43.3076555,name:'238',desc:'238',label:'238',color:'',icon:'',folder:'238'});
+				GV_Draw_Marker({lat:-22.8947449,lon:-43.5324391,name:'2381',desc:'2381',label:'2381',color:'',icon:'',folder:'2381'});
+				GV_Draw_Marker({lat:-22.8960775,lon:-43.3121052,name:'239',desc:'239',label:'239',color:'',icon:'',folder:'239'});
+				GV_Draw_Marker({lat:-22.8989944,lon:-43.3116104,name:'247',desc:'247',label:'247',color:'',icon:'',folder:'247'});
+				GV_Draw_Marker({lat:-22.9019177,lon:-43.2986263,name:'249',desc:'249',label:'249',color:'',icon:'',folder:'249'});
+				GV_Draw_Marker({lat:-22.8764847,lon:-43.3295140,name:'254',desc:'254',label:'254',color:'',icon:'',folder:'254'});
+				GV_Draw_Marker({lat:-22.8427577,lon:-43.3626570,name:'265',desc:'265',label:'265',color:'',icon:'',folder:'265'});
+				GV_Draw_Marker({lat:-22.8762697,lon:-43.3300793,name:'277',desc:'277',label:'277',color:'',icon:'',folder:'277'});
+				GV_Draw_Marker({lat:-22.8753897,lon:-43.5133435,name:'2803',desc:'2803',label:'2803',color:'',icon:'',folder:'2803'});
+				GV_Draw_Marker({lat:-22.8941350,lon:-43.5326121,name:'2804',desc:'2804',label:'2804',color:'',icon:'',folder:'2804'});
+				GV_Draw_Marker({lat:-22.8706197,lon:-43.2492871,name:'2918',desc:'2918',label:'2918',color:'',icon:'',folder:'2918'});
+				GV_Draw_Marker({lat:-22.9071951,lon:-43.2597303,name:'292',desc:'292',label:'292',color:'',icon:'',folder:'292'});
+				GV_Draw_Marker({lat:-22.8201000,lon:-43.3621500,name:'296',desc:'296',label:'296',color:'',icon:'',folder:'296'});
+				GV_Draw_Marker({lat:-22.8232885,lon:-43.3628042,name:'298',desc:'298',label:'298',color:'',icon:'',folder:'298'});
+				GV_Draw_Marker({lat:-22.8151645,lon:-43.3863482,name:'300',desc:'300',label:'300',color:'',icon:'',folder:'300'});
+				GV_Draw_Marker({lat:-22.9293892,lon:-43.2536085,name:'301',desc:'301',label:'301',color:'',icon:'',folder:'301'});
+				GV_Draw_Marker({lat:-22.9451686,lon:-43.3241447,name:'302',desc:'302',label:'302',color:'',icon:'',folder:'302'});
+				GV_Draw_Marker({lat:-22.8576695,lon:-43.2447191,name:'309',desc:'309',label:'309',color:'',icon:'',folder:'309'});
+				GV_Draw_Marker({lat:-22.9060833,lon:-43.2614000,name:'310',desc:'310',label:'310',color:'',icon:'',folder:'310'});
+				GV_Draw_Marker({lat:-22.9048575,lon:-43.2643739,name:'311',desc:'311',label:'311',color:'',icon:'',folder:'311'});
+				GV_Draw_Marker({lat:-22.8456311,lon:-43.2832773,name:'312',desc:'312',label:'312',color:'',icon:'',folder:'312'});
+				GV_Draw_Marker({lat:-22.8394000,lon:-43.2851000,name:'313',desc:'313',label:'313',color:'',icon:'',folder:'313'});
+				GV_Draw_Marker({lat:-22.9254718,lon:-43.2395722,name:'314',desc:'314',label:'314',color:'',icon:'',folder:'314'});
+				GV_Draw_Marker({lat:-22.8764489,lon:-43.2462173,name:'315',desc:'315',label:'315',color:'',icon:'',folder:'315'});
+				GV_Draw_Marker({lat:-22.8581284,lon:-43.2448366,name:'318',desc:'318',label:'318',color:'',icon:'',folder:'318'});
+				GV_Draw_Marker({lat:-22.8155076,lon:-43.1881929,name:'321',desc:'321',label:'321',color:'',icon:'',folder:'321'});
+				GV_Draw_Marker({lat:-22.8596000,lon:-43.2475000,name:'322',desc:'322',label:'322',color:'',icon:'',folder:'322'});
+				GV_Draw_Marker({lat:-22.8062345,lon:-43.1790625,name:'323',desc:'323',label:'323',color:'',icon:'',folder:'323'});
+				GV_Draw_Marker({lat:-22.8172138,lon:-43.1849713,name:'324',desc:'324',label:'324',color:'',icon:'',folder:'324'});
+				GV_Draw_Marker({lat:-22.8154105,lon:-43.1882650,name:'325',desc:'325',label:'325',color:'',icon:'',folder:'325'});
+				GV_Draw_Marker({lat:-22.8140557,lon:-43.1879698,name:'326',desc:'326',label:'326',color:'',icon:'',folder:'326'});
+				GV_Draw_Marker({lat:-22.8110024,lon:-43.1828511,name:'328',desc:'328',label:'328',color:'',icon:'',folder:'328'});
+				GV_Draw_Marker({lat:-22.8154525,lon:-43.1883060,name:'329',desc:'329',label:'329',color:'',icon:'',folder:'329'});
+				GV_Draw_Marker({lat:-22.9767797,lon:-43.3575291,name:'332',desc:'332',label:'332',color:'',icon:'',folder:'332'});
+				GV_Draw_Marker({lat:-22.8424168,lon:-43.2703826,name:'334',desc:'334',label:'334',color:'',icon:'',folder:'334'});
+				GV_Draw_Marker({lat:-22.9572790,lon:-43.3449100,name:'337',desc:'337',label:'337',color:'',icon:'',folder:'337'});
+				GV_Draw_Marker({lat:-22.9520904,lon:-43.3500111,name:'339',desc:'339',label:'339',color:'',icon:'',folder:'339'});
+				GV_Draw_Marker({lat:-22.8797411,lon:-43.3567628,name:'341',desc:'341',label:'341',color:'',icon:'',folder:'341'});
+				GV_Draw_Marker({lat:-22.8162250,lon:-43.3946000,name:'342',desc:'342',label:'342',color:'',icon:'',folder:'342'});
+				GV_Draw_Marker({lat:-22.9399023,lon:-43.3469150,name:'343',desc:'343',label:'343',color:'',icon:'',folder:'343'});
+				GV_Draw_Marker({lat:-22.8533000,lon:-43.3528000,name:'344',desc:'344',label:'344',color:'',icon:'',folder:'344'});
+				GV_Draw_Marker({lat:-22.9502082,lon:-43.3481491,name:'346',desc:'346',label:'346',color:'',icon:'',folder:'346'});
+				GV_Draw_Marker({lat:-22.9524347,lon:-43.3495898,name:'348',desc:'348',label:'348',color:'',icon:'',folder:'348'});
+				GV_Draw_Marker({lat:-22.8313419,lon:-43.3243697,name:'349',desc:'349',label:'349',color:'',icon:'',folder:'349'});
+				GV_Draw_Marker({lat:-22.8099495,lon:-43.3429144,name:'350',desc:'350',label:'350',color:'',icon:'',folder:'350'});
+				GV_Draw_Marker({lat:-22.8105153,lon:-43.3429412,name:'351',desc:'351',label:'351',color:'',icon:'',folder:'351'});
+				GV_Draw_Marker({lat:-22.9525637,lon:-43.3505347,name:'353',desc:'353',label:'353',color:'',icon:'',folder:'353'});
+				GV_Draw_Marker({lat:-22.9491329,lon:-43.3520185,name:'354',desc:'354',label:'354',color:'',icon:'',folder:'354'});
+				GV_Draw_Marker({lat:-22.8357290,lon:-43.3259155,name:'355',desc:'355',label:'355',color:'',icon:'',folder:'355'});
+				GV_Draw_Marker({lat:-22.8687313,lon:-43.3633966,name:'358',desc:'358',label:'358',color:'',icon:'',folder:'358'});
+				GV_Draw_Marker({lat:-22.9520511,lon:-43.3497790,name:'360',desc:'360',label:'360',color:'',icon:'',folder:'360'});
+				GV_Draw_Marker({lat:-22.8549674,lon:-43.3596585,name:'362',desc:'362',label:'362',color:'',icon:'',folder:'362'});
+				GV_Draw_Marker({lat:-22.8589077,lon:-43.3710060,name:'363',desc:'363',label:'363',color:'',icon:'',folder:'363'});
+				GV_Draw_Marker({lat:-22.8485053,lon:-43.5441265,name:'365',desc:'365',label:'365',color:'',icon:'',folder:'365'});
+				GV_Draw_Marker({lat:-22.9518706,lon:-43.3495998,name:'368',desc:'368',label:'368',color:'',icon:'',folder:'368'});
+				GV_Draw_Marker({lat:-22.8748914,lon:-43.4625350,name:'369',desc:'369',label:'369',color:'',icon:'',folder:'369'});
+				GV_Draw_Marker({lat:-22.8834233,lon:-43.4954219,name:'370',desc:'370',label:'370',color:'',icon:'',folder:'370'});
+				GV_Draw_Marker({lat:-22.8870950,lon:-43.3604455,name:'371',desc:'371',label:'371',color:'',icon:'',folder:'371'});
+				GV_Draw_Marker({lat:-22.8248143,lon:-43.3191857,name:'372',desc:'372',label:'372',color:'',icon:'',folder:'372'});
+				GV_Draw_Marker({lat:-22.8100564,lon:-43.3429461,name:'373',desc:'373',label:'373',color:'',icon:'',folder:'373'});
+				GV_Draw_Marker({lat:-22.8098400,lon:-43.3428600,name:'374',desc:'374',label:'374',color:'',icon:'',folder:'374'});
+				GV_Draw_Marker({lat:-22.8146776,lon:-43.3859637,name:'375',desc:'375',label:'375',color:'',icon:'',folder:'375'});
+				GV_Draw_Marker({lat:-22.8097512,lon:-43.3427351,name:'376',desc:'376',label:'376',color:'',icon:'',folder:'376'});
+				GV_Draw_Marker({lat:-22.8097207,lon:-43.3431109,name:'377',desc:'377',label:'377',color:'',icon:'',folder:'377'});
+				GV_Draw_Marker({lat:-22.8659648,lon:-43.3567706,name:'378',desc:'378',label:'378',color:'',icon:'',folder:'378'});
+				GV_Draw_Marker({lat:-22.8502126,lon:-43.5073146,name:'379',desc:'379',label:'379',color:'',icon:'',folder:'379'});
+				GV_Draw_Marker({lat:-22.9572843,lon:-43.3504019,name:'380',desc:'380',label:'380',color:'',icon:'',folder:'380'});
+				GV_Draw_Marker({lat:-22.8924721,lon:-43.3284321,name:'383',desc:'383',label:'383',color:'',icon:'',folder:'383'});
+				GV_Draw_Marker({lat:-22.8149000,lon:-43.3870000,name:'384',desc:'384',label:'384',color:'',icon:'',folder:'384'});
+				GV_Draw_Marker({lat:-22.8153247,lon:-43.3847491,name:'385',desc:'385',label:'385',color:'',icon:'',folder:'385'});
+				GV_Draw_Marker({lat:-22.8240033,lon:-43.3892444,name:'386',desc:'386',label:'386',color:'',icon:'',folder:'386'});
+				GV_Draw_Marker({lat:-22.8715742,lon:-43.4647934,name:'389',desc:'389',label:'389',color:'',icon:'',folder:'389'});
+				GV_Draw_Marker({lat:-22.9569464,lon:-43.3693871,name:'390',desc:'390',label:'390',color:'',icon:'',folder:'390'});
+				GV_Draw_Marker({lat:-22.8795363,lon:-43.4787050,name:'392',desc:'392',label:'392',color:'',icon:'',folder:'392'});
+				GV_Draw_Marker({lat:-22.8858535,lon:-43.4942286,name:'393',desc:'393',label:'393',color:'',icon:'',folder:'393'});
+				GV_Draw_Marker({lat:-22.8805231,lon:-43.4927833,name:'396',desc:'396',label:'396',color:'',icon:'',folder:'396'});
+				GV_Draw_Marker({lat:-22.8840191,lon:-43.4947446,name:'397',desc:'397',label:'397',color:'',icon:'',folder:'397'});
+				GV_Draw_Marker({lat:-22.9299067,lon:-43.2540543,name:'409',desc:'409',label:'409',color:'',icon:'',folder:'409'});
+				GV_Draw_Marker({lat:-22.8893942,lon:-43.2921059,name:'410',desc:'410',label:'410',color:'',icon:'',folder:'410'});
+				GV_Draw_Marker({lat:-22.8977986,lon:-43.2954741,name:'411',desc:'411',label:'411',color:'',icon:'',folder:'411'});
+				GV_Draw_Marker({lat:-22.9106692,lon:-43.2700070,name:'415',desc:'415',label:'415',color:'',icon:'',folder:'415'});
+				GV_Draw_Marker({lat:-22.9299896,lon:-43.2541507,name:'416',desc:'416',label:'416',color:'',icon:'',folder:'416'});
+				GV_Draw_Marker({lat:-22.9187548,lon:-43.2538597,name:'421',desc:'421',label:'421',color:'',icon:'',folder:'421'});
+				GV_Draw_Marker({lat:-22.8893004,lon:-43.2921681,name:'422',desc:'422',label:'422',color:'',icon:'',folder:'422'});
+				GV_Draw_Marker({lat:-22.9064635,lon:-43.2609151,name:'423',desc:'423',label:'423',color:'',icon:'',folder:'423'});
+				GV_Draw_Marker({lat:-22.9064381,lon:-43.2610080,name:'425',desc:'425',label:'425',color:'',icon:'',folder:'425'});
+				GV_Draw_Marker({lat:-22.9061898,lon:-43.2789833,name:'426',desc:'426',label:'426',color:'',icon:'',folder:'426'});
+				GV_Draw_Marker({lat:-22.9204817,lon:-43.2562391,name:'432',desc:'432',label:'432',color:'',icon:'',folder:'432'});
+				GV_Draw_Marker({lat:-22.9205578,lon:-43.2561614,name:'433',desc:'433',label:'433',color:'',icon:'',folder:'433'});
+				GV_Draw_Marker({lat:-22.9068997,lon:-43.2609184,name:'434',desc:'434',label:'434',color:'',icon:'',folder:'434'});
+				GV_Draw_Marker({lat:-22.9065230,lon:-43.2609417,name:'435',desc:'435',label:'435',color:'',icon:'',folder:'435'});
+				GV_Draw_Marker({lat:-22.9068571,lon:-43.2611094,name:'436',desc:'436',label:'436',color:'',icon:'',folder:'436'});
+				GV_Draw_Marker({lat:-22.9205205,lon:-43.2561935,name:'438',desc:'438',label:'438',color:'',icon:'',folder:'438'});
+				GV_Draw_Marker({lat:-22.9200164,lon:-43.2557278,name:'439',desc:'439',label:'439',color:'',icon:'',folder:'439'});
+				GV_Draw_Marker({lat:-22.8746808,lon:-43.2412524,name:'444',desc:'444',label:'444',color:'',icon:'',folder:'444'});
+				GV_Draw_Marker({lat:-22.8683608,lon:-43.2922986,name:'445',desc:'445',label:'445',color:'',icon:'',folder:'445'});
+				GV_Draw_Marker({lat:-22.9027147,lon:-43.3140941,name:'455',desc:'455',label:'455',color:'',icon:'',folder:'455'});
+				GV_Draw_Marker({lat:-22.8765776,lon:-43.3300940,name:'456',desc:'456',label:'456',color:'',icon:'',folder:'456'});
+				GV_Draw_Marker({lat:-22.8765033,lon:-43.3297684,name:'457',desc:'457',label:'457',color:'',icon:'',folder:'457'});
+				GV_Draw_Marker({lat:-22.8763236,lon:-43.3300357,name:'459',desc:'459',label:'459',color:'',icon:'',folder:'459'});
+				GV_Draw_Marker({lat:-22.8752308,lon:-43.2416539,name:'460',desc:'460',label:'460',color:'',icon:'',folder:'460'});
+				GV_Draw_Marker({lat:-22.8778469,lon:-43.2755790,name:'461',desc:'461',label:'461',color:'',icon:'',folder:'461'});
+				GV_Draw_Marker({lat:-22.8920833,lon:-43.2317015,name:'462',desc:'462',label:'462',color:'',icon:'',folder:'462'});
+				GV_Draw_Marker({lat:-22.8749206,lon:-43.2419062,name:'463',desc:'463',label:'463',color:'',icon:'',folder:'463'});
+				GV_Draw_Marker({lat:-22.9066421,lon:-43.2603208,name:'464',desc:'464',label:'464',color:'',icon:'',folder:'464'});
+				GV_Draw_Marker({lat:-22.8698871,lon:-43.2891846,name:'472',desc:'472',label:'472',color:'',icon:'',folder:'472'});
+				GV_Draw_Marker({lat:-22.8691086,lon:-43.2896609,name:'473',desc:'473',label:'473',color:'',icon:'',folder:'473'});
+				GV_Draw_Marker({lat:-22.8682238,lon:-43.2920551,name:'474',desc:'474',label:'474',color:'',icon:'',folder:'474'});
+				GV_Draw_Marker({lat:-22.8713180,lon:-43.2907095,name:'475',desc:'475',label:'475',color:'',icon:'',folder:'475'});
+				GV_Draw_Marker({lat:-22.8685944,lon:-43.2921585,name:'476',desc:'476',label:'476',color:'',icon:'',folder:'476'});
+				GV_Draw_Marker({lat:-22.8128500,lon:-43.2994556,name:'483',desc:'483',label:'483',color:'',icon:'',folder:'483'});
+				GV_Draw_Marker({lat:-22.8045125,lon:-43.3103847,name:'484',desc:'484',label:'484',color:'',icon:'',folder:'484'});
+				GV_Draw_Marker({lat:-22.8045659,lon:-43.3100025,name:'485',desc:'485',label:'485',color:'',icon:'',folder:'485'});
+				GV_Draw_Marker({lat:-22.8044000,lon:-43.3098991,name:'497',desc:'497',label:'497',color:'',icon:'',folder:'497'});
+				GV_Draw_Marker({lat:-22.9025841,lon:-43.1968118,name:'503',desc:'503',label:'503',color:'',icon:'',folder:'503'});
+				GV_Draw_Marker({lat:-22.9018524,lon:-43.1965645,name:'511',desc:'511',label:'511',color:'',icon:'',folder:'511'});
+				GV_Draw_Marker({lat:-22.9020374,lon:-43.1967205,name:'512',desc:'512',label:'512',color:'',icon:'',folder:'512'});
+				GV_Draw_Marker({lat:-22.9021306,lon:-43.1963366,name:'513',desc:'513',label:'513',color:'',icon:'',folder:'513'});
+				GV_Draw_Marker({lat:-22.9523374,lon:-43.3490802,name:'525',desc:'525',label:'525',color:'',icon:'',folder:'525'});
+				GV_Draw_Marker({lat:-22.8712701,lon:-43.2935268,name:'535',desc:'535',label:'535',color:'',icon:'',folder:'535'});
+				GV_Draw_Marker({lat:-22.9018573,lon:-43.1965387,name:'538',desc:'538',label:'538',color:'',icon:'',folder:'538'});
+				GV_Draw_Marker({lat:-22.9620301,lon:-43.1652948,name:'539',desc:'539',label:'539',color:'',icon:'',folder:'539'});
+				GV_Draw_Marker({lat:-22.9209505,lon:-43.2558877,name:'548',desc:'548',label:'548',color:'',icon:'',folder:'548'});
+				GV_Draw_Marker({lat:-22.9508653,lon:-43.3483581,name:'550',desc:'550',label:'550',color:'',icon:'',folder:'550'});
+				GV_Draw_Marker({lat:-22.9519270,lon:-43.3499030,name:'555',desc:'555',label:'555',color:'',icon:'',folder:'555'});
+				GV_Draw_Marker({lat:-22.9502070,lon:-43.3480730,name:'556',desc:'556',label:'556',color:'',icon:'',folder:'556'});
+				GV_Draw_Marker({lat:-22.9510119,lon:-43.3483798,name:'557',desc:'557',label:'557',color:'',icon:'',folder:'557'});
+				GV_Draw_Marker({lat:-22.9019119,lon:-43.1967562,name:'569',desc:'569',label:'569',color:'',icon:'',folder:'569'});
+				GV_Draw_Marker({lat:-22.9019329,lon:-43.1966901,name:'570',desc:'570',label:'570',color:'',icon:'',folder:'570'});
+				GV_Draw_Marker({lat:-22.9022048,lon:-43.1967629,name:'573',desc:'573',label:'573',color:'',icon:'',folder:'573'});
+				GV_Draw_Marker({lat:-22.9020846,lon:-43.1969859,name:'574',desc:'574',label:'574',color:'',icon:'',folder:'574'});
+				GV_Draw_Marker({lat:-22.9018101,lon:-43.1965335,name:'580',desc:'580',label:'580',color:'',icon:'',folder:'580'});
+				GV_Draw_Marker({lat:-22.9021933,lon:-43.1967682,name:'583',desc:'583',label:'583',color:'',icon:'',folder:'583'});
+				GV_Draw_Marker({lat:-22.9018586,lon:-43.1965788,name:'584',desc:'584',label:'584',color:'',icon:'',folder:'584'});
+				GV_Draw_Marker({lat:-22.9554774,lon:-43.3477947,name:'600',desc:'600',label:'600',color:'',icon:'',folder:'600'});
+				GV_Draw_Marker({lat:-22.9439108,lon:-43.3683574,name:'601',desc:'601',label:'601',color:'',icon:'',folder:'601'});
+				GV_Draw_Marker({lat:-22.9300368,lon:-43.2544414,name:'602',desc:'602',label:'602',color:'',icon:'',folder:'602'});
+				GV_Draw_Marker({lat:-22.9290764,lon:-43.2535337,name:'603',desc:'603',label:'603',color:'',icon:'',folder:'603'});
+				GV_Draw_Marker({lat:-22.9202553,lon:-43.2560224,name:'605',desc:'605',label:'605',color:'',icon:'',folder:'605'});
+				GV_Draw_Marker({lat:-22.9014718,lon:-43.2979734,name:'606',desc:'606',label:'606',color:'',icon:'',folder:'606'});
+				GV_Draw_Marker({lat:-22.8764034,lon:-43.3300659,name:'607',desc:'607',label:'607',color:'',icon:'',folder:'607'});
+				GV_Draw_Marker({lat:-22.9291621,lon:-43.2536428,name:'608',desc:'608',label:'608',color:'',icon:'',folder:'608'});
+				GV_Draw_Marker({lat:-22.8608051,lon:-43.3554292,name:'609',desc:'609',label:'609',color:'',icon:'',folder:'609'});
+				GV_Draw_Marker({lat:-22.9569433,lon:-43.3620582,name:'611',desc:'611',label:'611',color:'',icon:'',folder:'611'});
+				GV_Draw_Marker({lat:-22.9571516,lon:-43.3548658,name:'612',desc:'612',label:'612',color:'',icon:'',folder:'612'});
+				GV_Draw_Marker({lat:-22.9420713,lon:-43.3519105,name:'613',desc:'613',label:'613',color:'',icon:'',folder:'613'});
+				GV_Draw_Marker({lat:-22.9527170,lon:-43.3507482,name:'614',desc:'614',label:'614',color:'',icon:'',folder:'614'});
+				GV_Draw_Marker({lat:-22.8126482,lon:-43.3834753,name:'615',desc:'615',label:'615',color:'',icon:'',folder:'615'});
+				GV_Draw_Marker({lat:-22.8313223,lon:-43.2088213,name:'616',desc:'616',label:'616',color:'',icon:'',folder:'616'});
+				GV_Draw_Marker({lat:-22.8428935,lon:-43.2860624,name:'621',desc:'621',label:'621',color:'',icon:'',folder:'621'});
+				GV_Draw_Marker({lat:-22.8372001,lon:-43.2854202,name:'622',desc:'622',label:'622',color:'',icon:'',folder:'622'});
+				GV_Draw_Marker({lat:-22.8578073,lon:-43.3014186,name:'623',desc:'623',label:'623',color:'',icon:'',folder:'623'});
+				GV_Draw_Marker({lat:-22.8368162,lon:-43.2857480,name:'625',desc:'625',label:'625',color:'',icon:'',folder:'625'});
+				GV_Draw_Marker({lat:-22.8682689,lon:-43.2575147,name:'627',desc:'627',label:'627',color:'',icon:'',folder:'627'});
+				GV_Draw_Marker({lat:-22.8419477,lon:-43.2843906,name:'628',desc:'628',label:'628',color:'',icon:'',folder:'628'});
+				GV_Draw_Marker({lat:-22.8180639,lon:-43.3057647,name:'629',desc:'629',label:'629',color:'',icon:'',folder:'629'});
+				GV_Draw_Marker({lat:-22.8679898,lon:-43.2572526,name:'630',desc:'630',label:'630',color:'',icon:'',folder:'630'});
+				GV_Draw_Marker({lat:-22.8145981,lon:-43.1872580,name:'634',desc:'634',label:'634',color:'',icon:'',folder:'634'});
+				GV_Draw_Marker({lat:-22.8065625,lon:-43.1784329,name:'635',desc:'635',label:'635',color:'',icon:'',folder:'635'});
+				GV_Draw_Marker({lat:-22.9494884,lon:-43.3479100,name:'636',desc:'636',label:'636',color:'',icon:'',folder:'636'});
+				GV_Draw_Marker({lat:-22.8598557,lon:-43.3586107,name:'638',desc:'638',label:'638',color:'',icon:'',folder:'638'});
+				GV_Draw_Marker({lat:-22.8160971,lon:-43.3049064,name:'639',desc:'639',label:'639',color:'',icon:'',folder:'639'});
+				GV_Draw_Marker({lat:-22.8762630,lon:-43.3302072,name:'650',desc:'650',label:'650',color:'',icon:'',folder:'650'});
+				GV_Draw_Marker({lat:-22.8582479,lon:-43.3714212,name:'653',desc:'653',label:'653',color:'',icon:'',folder:'653'});
+				GV_Draw_Marker({lat:-22.8370698,lon:-43.2853121,name:'661',desc:'661',label:'661',color:'',icon:'',folder:'661'});
+				GV_Draw_Marker({lat:-22.8153596,lon:-43.1883867,name:'663',desc:'663',label:'663',color:'',icon:'',folder:'663'});
+				GV_Draw_Marker({lat:-22.8122278,lon:-43.3404292,name:'665',desc:'665',label:'665',color:'',icon:'',folder:'665'});
+				GV_Draw_Marker({lat:-22.8763944,lon:-43.3296018,name:'667',desc:'667',label:'667',color:'',icon:'',folder:'667'});
+				GV_Draw_Marker({lat:-22.8336390,lon:-43.3659717,name:'669',desc:'669',label:'669',color:'',icon:'',folder:'669'});
+				GV_Draw_Marker({lat:-22.8328964,lon:-43.2887068,name:'673',desc:'673',label:'673',color:'',icon:'',folder:'673'});
+				GV_Draw_Marker({lat:-22.8666813,lon:-43.3699160,name:'678',desc:'678',label:'678',color:'',icon:'',folder:'678'});
+				GV_Draw_Marker({lat:-22.8400806,lon:-43.2870736,name:'679',desc:'679',label:'679',color:'',icon:'',folder:'679'});
+				GV_Draw_Marker({lat:-22.8649814,lon:-43.2585072,name:'680',desc:'680',label:'680',color:'',icon:'',folder:'680'});
+				GV_Draw_Marker({lat:-22.8950511,lon:-43.4742238,name:'684',desc:'684',label:'684',color:'',icon:'',folder:'684'});
+				GV_Draw_Marker({lat:-22.8600689,lon:-43.3556784,name:'685',desc:'685',label:'685',color:'',icon:'',folder:'685'});
+				GV_Draw_Marker({lat:-22.8763971,lon:-43.3294641,name:'686',desc:'686',label:'686',color:'',icon:'',folder:'686'});
+				GV_Draw_Marker({lat:-22.8139191,lon:-43.3878506,name:'687',desc:'687',label:'687',color:'',icon:'',folder:'687'});
+				GV_Draw_Marker({lat:-22.8154216,lon:-43.3911443,name:'688',desc:'688',label:'688',color:'',icon:'',folder:'688'});
+				GV_Draw_Marker({lat:-22.8953000,lon:-43.4739800,name:'689',desc:'689',label:'689',color:'',icon:'',folder:'689'});
+				GV_Draw_Marker({lat:-22.9451140,lon:-43.3445130,name:'691',desc:'691',label:'691',color:'',icon:'',folder:'691'});
+				GV_Draw_Marker({lat:-22.9508595,lon:-43.3490959,name:'692',desc:'692',label:'692',color:'',icon:'',folder:'692'});
+				GV_Draw_Marker({lat:-22.8151495,lon:-43.1886080,name:'696',desc:'696',label:'696',color:'',icon:'',folder:'696'});
+				GV_Draw_Marker({lat:-22.8897354,lon:-43.2920883,name:'7',desc:'7',label:'7',color:'',icon:'',folder:'7'});
+				GV_Draw_Marker({lat:-22.8605537,lon:-43.3560693,name:'709',desc:'709',label:'709',color:'',icon:'',folder:'709'});
+				GV_Draw_Marker({lat:-22.8597937,lon:-43.3553972,name:'712',desc:'712',label:'712',color:'',icon:'',folder:'712'});
+				GV_Draw_Marker({lat:-22.8606444,lon:-43.3557925,name:'721',desc:'721',label:'721',color:'',icon:'',folder:'721'});
+				GV_Draw_Marker({lat:-22.8763438,lon:-43.3679828,name:'723',desc:'723',label:'723',color:'',icon:'',folder:'723'});
+				GV_Draw_Marker({lat:-22.8161909,lon:-43.3770998,name:'727',desc:'727',label:'727',color:'',icon:'',folder:'727'});
+				GV_Draw_Marker({lat:-22.8974885,lon:-43.5112173,name:'731',desc:'731',label:'731',color:'',icon:'',folder:'731'});
+				GV_Draw_Marker({lat:-22.9155248,lon:-43.3527587,name:'734',desc:'734',label:'734',color:'',icon:'',folder:'734'});
+				GV_Draw_Marker({lat:-22.8956054,lon:-43.4745102,name:'737',desc:'737',label:'737',color:'',icon:'',folder:'737'});
+				GV_Draw_Marker({lat:-22.8947608,lon:-43.4903965,name:'738',desc:'738',label:'738',color:'',icon:'',folder:'738'});
+				GV_Draw_Marker({lat:-22.8780634,lon:-43.4476368,name:'742',desc:'742',label:'742',color:'',icon:'',folder:'742'});
+				GV_Draw_Marker({lat:-22.8836471,lon:-43.4290808,name:'743',desc:'743',label:'743',color:'',icon:'',folder:'743'});
+				GV_Draw_Marker({lat:-22.8877720,lon:-43.4313233,name:'744',desc:'744',label:'744',color:'',icon:'',folder:'744'});
+				GV_Draw_Marker({lat:-22.8948658,lon:-43.4743871,name:'745',desc:'745',label:'745',color:'',icon:'',folder:'745'});
+				GV_Draw_Marker({lat:-22.8906553,lon:-43.4784937,name:'746',desc:'746',label:'746',color:'',icon:'',folder:'746'});
+				GV_Draw_Marker({lat:-22.9189300,lon:-43.6439900,name:'750',desc:'750',label:'750',color:'',icon:'',folder:'750'});
+				GV_Draw_Marker({lat:-22.9172077,lon:-43.6429464,name:'752',desc:'752',label:'752',color:'',icon:'',folder:'752'});
+				GV_Draw_Marker({lat:-22.9198887,lon:-43.6435541,name:'754',desc:'754',label:'754',color:'',icon:'',folder:'754'});
+				GV_Draw_Marker({lat:-22.8863604,lon:-43.5196438,name:'756',desc:'756',label:'756',color:'',icon:'',folder:'756'});
+				GV_Draw_Marker({lat:-22.9192992,lon:-43.6436639,name:'759',desc:'759',label:'759',color:'',icon:'',folder:'759'});
+				GV_Draw_Marker({lat:-22.8816622,lon:-43.3583952,name:'766',desc:'766',label:'766',color:'',icon:'',folder:'766'});
+				GV_Draw_Marker({lat:-22.9195295,lon:-43.6088635,name:'770',desc:'770',label:'770',color:'',icon:'',folder:'770'});
+				GV_Draw_Marker({lat:-22.9191905,lon:-43.6071300,name:'771',desc:'771',label:'771',color:'',icon:'',folder:'771'});
+				GV_Draw_Marker({lat:-22.8204444,lon:-43.3698498,name:'773',desc:'773',label:'773',color:'',icon:'',folder:'773'});
+				GV_Draw_Marker({lat:-22.8130051,lon:-43.3048122,name:'774',desc:'774',label:'774',color:'',icon:'',folder:'774'});
+				GV_Draw_Marker({lat:-22.8154199,lon:-43.3083695,name:'775',desc:'775',label:'775',color:'',icon:'',folder:'775'});
+				GV_Draw_Marker({lat:-22.8699252,lon:-43.3948408,name:'777',desc:'777',label:'777',color:'',icon:'',folder:'777'});
+				GV_Draw_Marker({lat:-22.8115678,lon:-43.3724446,name:'778',desc:'778',label:'778',color:'',icon:'',folder:'778'});
+				GV_Draw_Marker({lat:-22.8137086,lon:-43.3867689,name:'779',desc:'779',label:'779',color:'',icon:'',folder:'779'});
+				GV_Draw_Marker({lat:-22.8604698,lon:-43.3560510,name:'781',desc:'781',label:'781',color:'',icon:'',folder:'781'});
+				GV_Draw_Marker({lat:-22.8613617,lon:-43.3548606,name:'782',desc:'782',label:'782',color:'',icon:'',folder:'782'});
+				GV_Draw_Marker({lat:-22.8604882,lon:-43.3559756,name:'783',desc:'783',label:'783',color:'',icon:'',folder:'783'});
+				GV_Draw_Marker({lat:-22.8963407,lon:-43.5077677,name:'786',desc:'786',label:'786',color:'',icon:'',folder:'786'});
+				GV_Draw_Marker({lat:-22.8768885,lon:-43.4434463,name:'790',desc:'790',label:'790',color:'',icon:'',folder:'790'});
+				GV_Draw_Marker({lat:-22.8132546,lon:-43.3789947,name:'793',desc:'793',label:'793',color:'',icon:'',folder:'793'});
+				GV_Draw_Marker({lat:-22.8783079,lon:-43.4630376,name:'794',desc:'794',label:'794',color:'',icon:'',folder:'794'});
+				GV_Draw_Marker({lat:-22.8154995,lon:-43.3911964,name:'795',desc:'795',label:'795',color:'',icon:'',folder:'795'});
+				GV_Draw_Marker({lat:-22.8791610,lon:-43.4486002,name:'801',desc:'801',label:'801',color:'',icon:'',folder:'801'});
+				GV_Draw_Marker({lat:-22.8948977,lon:-43.5338616,name:'802',desc:'802',label:'802',color:'',icon:'',folder:'802'});
+				GV_Draw_Marker({lat:-22.8795030,lon:-43.3569720,name:'803',desc:'803',label:'803',color:'',icon:'',folder:'803'});
+				GV_Draw_Marker({lat:-22.9481316,lon:-43.6809764,name:'804',desc:'804',label:'804',color:'',icon:'',folder:'804'});
+				GV_Draw_Marker({lat:-22.9302675,lon:-43.6377983,name:'807',desc:'807',label:'807',color:'',icon:'',folder:'807'});
+				GV_Draw_Marker({lat:-22.8951662,lon:-43.4740618,name:'811',desc:'811',label:'811',color:'',icon:'',folder:'811'});
+				GV_Draw_Marker({lat:-22.8952010,lon:-43.4742810,name:'812',desc:'812',label:'812',color:'',icon:'',folder:'812'});
+				GV_Draw_Marker({lat:-22.9131665,lon:-43.5938120,name:'813',desc:'813',label:'813',color:'',icon:'',folder:'813'});
+				GV_Draw_Marker({lat:-22.9579303,lon:-43.3455737,name:'817',desc:'817',label:'817',color:'',icon:'',folder:'817'});
+				GV_Draw_Marker({lat:-22.8950077,lon:-43.4742375,name:'819',desc:'819',label:'819',color:'',icon:'',folder:'819'});
+				GV_Draw_Marker({lat:-22.9020337,lon:-43.5601623,name:'821',desc:'821',label:'821',color:'',icon:'',folder:'821'});
+				GV_Draw_Marker({lat:-22.9163610,lon:-43.6081090,name:'824',desc:'824',label:'824',color:'',icon:'',folder:'824'});
+				GV_Draw_Marker({lat:-22.9516430,lon:-43.3487360,name:'829',desc:'829',label:'829',color:'',icon:'',folder:'829'});
+				GV_Draw_Marker({lat:-22.8952264,lon:-43.5335652,name:'835',desc:'835',label:'835',color:'',icon:'',folder:'835'});
+				GV_Draw_Marker({lat:-22.8944584,lon:-43.5332592,name:'837',desc:'837',label:'837',color:'',icon:'',folder:'837'});
+				GV_Draw_Marker({lat:-22.8939593,lon:-43.5324070,name:'838',desc:'838',label:'838',color:'',icon:'',folder:'838'});
+				GV_Draw_Marker({lat:-22.9159355,lon:-43.6282671,name:'839',desc:'839',label:'839',color:'',icon:'',folder:'839'});
+				GV_Draw_Marker({lat:-22.9146989,lon:-43.6009276,name:'841',desc:'841',label:'841',color:'',icon:'',folder:'841'});
+				GV_Draw_Marker({lat:-22.8943394,lon:-43.5337511,name:'843',desc:'843',label:'843',color:'',icon:'',folder:'843'});
+				GV_Draw_Marker({lat:-22.9006478,lon:-43.5420471,name:'846',desc:'846',label:'846',color:'',icon:'',folder:'846'});
+				GV_Draw_Marker({lat:-22.8985143,lon:-43.5130110,name:'847',desc:'847',label:'847',color:'',icon:'',folder:'847'});
+				GV_Draw_Marker({lat:-22.8953812,lon:-43.4745265,name:'848',desc:'848',label:'848',color:'',icon:'',folder:'848'});
+				GV_Draw_Marker({lat:-22.9225835,lon:-43.7006934,name:'849',desc:'849',label:'849',color:'',icon:'',folder:'849'});
+				GV_Draw_Marker({lat:-22.8951917,lon:-43.5338012,name:'851',desc:'851',label:'851',color:'',icon:'',folder:'851'});
+				GV_Draw_Marker({lat:-22.9274440,lon:-43.6353753,name:'857',desc:'857',label:'857',color:'',icon:'',folder:'857'});
+				GV_Draw_Marker({lat:-22.9500370,lon:-43.3477060,name:'860',desc:'860',label:'860',color:'',icon:'',folder:'860'});
+				GV_Draw_Marker({lat:-22.9503752,lon:-43.3489656,name:'861',desc:'861',label:'861',color:'',icon:'',folder:'861'});
+				GV_Draw_Marker({lat:-22.9525806,lon:-43.3502995,name:'862',desc:'862',label:'862',color:'',icon:'',folder:'862'});
+				GV_Draw_Marker({lat:-22.9494319,lon:-43.3481271,name:'863',desc:'863',label:'863',color:'',icon:'',folder:'863'});
+				GV_Draw_Marker({lat:-22.8943052,lon:-43.5323698,name:'864',desc:'864',label:'864',color:'',icon:'',folder:'864'});
+				GV_Draw_Marker({lat:-22.8930549,lon:-43.5320924,name:'866',desc:'866',label:'866',color:'',icon:'',folder:'866'});
+				GV_Draw_Marker({lat:-22.8946852,lon:-43.5325853,name:'867',desc:'867',label:'867',color:'',icon:'',folder:'867'});
+				GV_Draw_Marker({lat:-22.9197764,lon:-43.6445979,name:'873',desc:'873',label:'873',color:'',icon:'',folder:'873'});
+				GV_Draw_Marker({lat:-22.9586126,lon:-43.3442058,name:'880',desc:'880',label:'880',color:'',icon:'',folder:'880'});
+				GV_Draw_Marker({lat:-22.9192910,lon:-43.6448590,name:'881',desc:'881',label:'881',color:'',icon:'',folder:'881'});
+				GV_Draw_Marker({lat:-22.8953275,lon:-43.5326484,name:'884',desc:'884',label:'884',color:'',icon:'',folder:'884'});
+				GV_Draw_Marker({lat:-22.9512323,lon:-43.3491026,name:'887',desc:'887',label:'887',color:'',icon:'',folder:'887'});
+				GV_Draw_Marker({lat:-22.8804654,lon:-43.3575970,name:'889',desc:'889',label:'889',color:'',icon:'',folder:'889'});
+				GV_Draw_Marker({lat:-22.9195961,lon:-43.6435003,name:'892',desc:'892',label:'892',color:'',icon:'',folder:'892'});
+				GV_Draw_Marker({lat:-22.9010304,lon:-43.6323867,name:'893',desc:'893',label:'893',color:'',icon:'',folder:'893'});
+				GV_Draw_Marker({lat:-22.9401437,lon:-43.6340179,name:'898',desc:'898',label:'898',color:'',icon:'',folder:'898'});
+				GV_Draw_Marker({lat:-22.8150284,lon:-43.1871433,name:'901',desc:'901',label:'901',color:'',icon:'',folder:'901'});
+				GV_Draw_Marker({lat:-22.8494190,lon:-43.3231527,name:'905',desc:'905',label:'905',color:'',icon:'',folder:'905'});
+				GV_Draw_Marker({lat:-22.8046851,lon:-43.3097437,name:'906',desc:'906',label:'906',color:'',icon:'',folder:'906'});
+				GV_Draw_Marker({lat:-22.8564725,lon:-43.3592485,name:'908',desc:'908',label:'908',color:'',icon:'',folder:'908'});
+				GV_Draw_Marker({lat:-22.8150632,lon:-43.1872692,name:'910',desc:'910',label:'910',color:'',icon:'',folder:'910'});
+				GV_Draw_Marker({lat:-22.8270767,lon:-43.2040294,name:'913',desc:'913',label:'913',color:'',icon:'',folder:'913'});
+				GV_Draw_Marker({lat:-22.8153000,lon:-43.1875000,name:'914',desc:'914',label:'914',color:'',icon:'',folder:'914'});
+				GV_Draw_Marker({lat:-22.8765500,lon:-43.3680000,name:'917',desc:'917',label:'917',color:'',icon:'',folder:'917'});
+				GV_Draw_Marker({lat:-22.8954506,lon:-43.5328867,name:'918',desc:'918',label:'918',color:'',icon:'',folder:'918'});
+				GV_Draw_Marker({lat:-22.8675947,lon:-43.2586521,name:'919',desc:'919',label:'919',color:'',icon:'',folder:'919'});
+				GV_Draw_Marker({lat:-22.8147000,lon:-43.1872000,name:'922',desc:'922',label:'922',color:'',icon:'',folder:'922'});
+				GV_Draw_Marker({lat:-22.8839210,lon:-43.4947890,name:'923',desc:'923',label:'923',color:'',icon:'',folder:'923'});
+				GV_Draw_Marker({lat:-22.8145522,lon:-43.1875058,name:'924',desc:'924',label:'924',color:'',icon:'',folder:'924'});
+				GV_Draw_Marker({lat:-22.8161138,lon:-43.1879948,name:'925',desc:'925',label:'925',color:'',icon:'',folder:'925'});
+				GV_Draw_Marker({lat:-22.8947984,lon:-43.4740631,name:'926',desc:'926',label:'926',color:'',icon:'',folder:'926'});
+				GV_Draw_Marker({lat:-22.8339068,lon:-43.3284013,name:'928',desc:'928',label:'928',color:'',icon:'',folder:'928'});
+				GV_Draw_Marker({lat:-22.8152000,lon:-43.1874000,name:'934',desc:'934',label:'934',color:'',icon:'',folder:'934'});
+				GV_Draw_Marker({lat:-22.8152573,lon:-43.1884899,name:'935',desc:'935',label:'935',color:'',icon:'',folder:'935'});
+				GV_Draw_Marker({lat:-22.9023119,lon:-43.5617047,name:'936',desc:'936',label:'936',color:'',icon:'',folder:'936'});
+				GV_Draw_Marker({lat:-22.8257878,lon:-43.2845376,name:'940',desc:'940',label:'940',color:'',icon:'',folder:'940'});
+				GV_Draw_Marker({lat:-22.8045000,lon:-43.3627000,name:'942',desc:'942',label:'942',color:'',icon:'',folder:'942'});
+				GV_Draw_Marker({lat:-22.8167000,lon:-43.3942000,name:'944',desc:'944',label:'944',color:'',icon:'',folder:'944'});
+				GV_Draw_Marker({lat:-22.8163685,lon:-43.2819120,name:'945',desc:'945',label:'945',color:'',icon:'',folder:'945'});
+				GV_Draw_Marker({lat:-22.8154485,lon:-43.3902348,name:'946',desc:'946',label:'946',color:'',icon:'',folder:'946'});
+				GV_Draw_Marker({lat:-22.8155437,lon:-43.3860457,name:'947',desc:'947',label:'947',color:'',icon:'',folder:'947'});
+				GV_Draw_Marker({lat:-22.8348298,lon:-43.3091838,name:'950',desc:'950',label:'950',color:'',icon:'',folder:'950'});
+				GV_Draw_Marker({lat:-22.8389778,lon:-43.3187644,name:'951',desc:'951',label:'951',color:'',icon:'',folder:'951'});
+				GV_Draw_Marker({lat:-22.9291519,lon:-43.2538592,name:'LECD06',desc:'LECD06',label:'LECD06',color:'',icon:'',folder:'LECD06'});
+				GV_Draw_Marker({lat:-22.9558602,lon:-43.3681023,name:'LECD10',desc:'LECD10',label:'LECD10',color:'',icon:'',folder:'LECD10'});
+				GV_Draw_Marker({lat:-22.8955710,lon:-43.4743190,name:'LECD11',desc:'LECD11',label:'LECD11',color:'',icon:'',folder:'LECD11'});
+				GV_Draw_Marker({lat:-22.8833900,lon:-43.4949000,name:'LECD12',desc:'LECD12',label:'LECD12',color:'',icon:'',folder:'LECD12'});
+				GV_Draw_Marker({lat:-22.8910087,lon:-43.2290992,name:'LECD2',desc:'LECD2',label:'LECD2',color:'',icon:'',folder:'LECD2'});
+				GV_Draw_Marker({lat:-22.9020595,lon:-43.2983263,name:'SP249',desc:'SP249',label:'SP249',color:'',icon:'',folder:'SP249'});
+				GV_Draw_Marker({lat:-22.8570000,lon:-43.3660000,name:'SP265',desc:'SP265',label:'SP265',color:'',icon:'',folder:'SP265'});
+				GV_Draw_Marker({lat:-22.9065963,lon:-43.2607704,name:'SP292',desc:'SP292',label:'SP292',color:'',icon:'',folder:'SP292'});
+				GV_Draw_Marker({lat:-23.0221145,lon:-43.4823325,name:'SP316',desc:'SP316',label:'SP316',color:'',icon:'',folder:'SP316'});
+				GV_Draw_Marker({lat:-22.9170595,lon:-43.6081406,name:'SP398',desc:'SP398',label:'SP398',color:'',icon:'',folder:'SP398'});
+				GV_Draw_Marker({lat:-22.9161224,lon:-43.6070131,name:'SP850',desc:'SP850',label:'SP850',color:'',icon:'',folder:'SP850'});
+				GV_Draw_Marker({lat:-22.8094314,lon:-43.3430971,name:'SPB350',desc:'SPB350',label:'SPB350',color:'',icon:'',folder:'SPB350'});
+				GV_Draw_Marker({lat:-22.8100092,lon:-43.3429154,name:'SR350',desc:'SR350',label:'SR350',color:'',icon:'',folder:'SR350'});
+				GV_Draw_Marker({lat:-22.8902449,lon:-43.2721542,name:'SR393',desc:'SR393',label:'SR393',color:'',icon:'',folder:'SR393'});
+				GV_Draw_Marker({lat:-22.9019970,lon:-43.2983856,name:'SV249',desc:'SV249',label:'SV249',color:'',icon:'',folder:'SV249'});
+				GV_Draw_Marker({lat:-22.8164000,lon:-43.3946000,name:'SV342',desc:'SV342',label:'SV342',color:'',icon:'',folder:'SV342'});
+				GV_Draw_Marker({lat:-22.8097333,lon:-43.3425333,name:'SV376',desc:'SV376',label:'SV376',color:'',icon:'',folder:'SV376'});
+				GV_Draw_Marker({lat:-22.9574219,lon:-43.3452228,name:'SV390',desc:'SV390',label:'SV390',color:'',icon:'',folder:'SV390'});
+				GV_Draw_Marker({lat:-22.8755387,lon:-43.4190583,name:'SV395',desc:'SV395',label:'SV395',color:'',icon:'',folder:'SV395'});
+				GV_Draw_Marker({lat:-22.8187800,lon:-43.2712400,name:'SV498',desc:'SV498',label:'SV498',color:'',icon:'',folder:'SV498'});
+				GV_Draw_Marker({lat:-22.9025373,lon:-43.2979982,name:'SV606',desc:'SV606',label:'SV606',color:'',icon:'',folder:'SV606'});
+				GV_Draw_Marker({lat:-22.8606845,lon:-43.3563000,name:'SV685',desc:'SV685',label:'SV685',color:'',icon:'',folder:'SV685'});
+				GV_Draw_Marker({lat:-22.8171654,lon:-43.3013758,name:'SV774',desc:'SV774',label:'SV774',color:'',icon:'',folder:'SV774'});
+				GV_Draw_Marker({lat:-22.8157485,lon:-43.3920364,name:'SV779',desc:'SV779',label:'SV779',color:'',icon:'',folder:'SV779'});
+				GV_Draw_Marker({lat:-22.8872987,lon:-43.4853574,name:'SV790',desc:'SV790',label:'SV790',color:'',icon:'',folder:'SV790'});
+				GV_Draw_Marker({lat:-22.8953867,lon:-43.5325797,name:'SV843',desc:'SV843',label:'SV843',color:'',icon:'',folder:'SV843'});
+				GV_Draw_Marker({lat:-22.9195184,lon:-43.6437880,name:'SV858',desc:'SV858',label:'SV858',color:'',icon:'',folder:'SV858'});
+				GV_Draw_Marker({lat:-22.8944851,lon:-43.5327779,name:'SV866',desc:'SV866',label:'SV866',color:'',icon:'',folder:'SV866'});
+				GV_Draw_Marker({lat:-22.8314500,lon:-43.2175000,name:'SV901',desc:'SV901',label:'SV901',color:'',icon:'',folder:'SV901'});
+				GV_Draw_Marker({lat:-22.8098428,lon:-43.3427824,name:'SVA665',desc:'SVA665',label:'SVA665',color:'',icon:'',folder:'SVA665'});
+				GV_Draw_Marker({lat:-22.8495881,lon:-43.3232673,name:'SVA905',desc:'SVA905',label:'SVA905',color:'',icon:'',folder:'SVA905'});
+				GV_Draw_Marker({lat:-22.8100250,lon:-43.3429750,name:'SVB665',desc:'SVB665',label:'SVB665',color:'',icon:'',folder:'SVB665'});
+				GV_Draw_Marker({lat:-22.8495526,lon:-43.3233221,name:'SVB905',desc:'SVB905',label:'SVB905',color:'',icon:'',folder:'SVB905'});
+				GV_Draw_Marker({lat:-22.8494139,lon:-43.3232836,name:'SVC905',desc:'SVC905',label:'SVC905',color:'',icon:'',folder:'SVC905'});
+				
+				
+				GV_Finish_Map();
+					
+			  
+			}
+			GV_Map(); // execute the above code
+			// http://www.gpsvisualizer.com/map_input?force_type=w&form=google&show_wpt=3&synthesize_desc=%7Blinha%7D&synthesize_folder=%7Blinha%7D&synthesize_label=%7Blinha%7D&synthesize_name=%7Blinha%7D&wpt_list=name
+		</script>
+		
+		
+		
+	</body>
+
+</html>
