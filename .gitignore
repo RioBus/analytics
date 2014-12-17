@@ -28,3 +28,4 @@ node_modules
 .lock-wscript
 queue.json
 queue.json.gz
+files/**
