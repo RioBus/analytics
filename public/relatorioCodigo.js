@@ -244,6 +244,103 @@ window.onload = function() {
 		return output;
 	}
 
+	function contains(array, obj) {
+		var l = array.length;
+
+		for (var i = 0; i < l; i++) {
+			if (array[i] == obj) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	function getCollectDates(data) {
+		data = analysesData(data);
+
+		var datesArray = [];
+
+		data.map(function(data) {
+			var lastUpdate = data.LASTUPDATE;
+			datesArray.push(lastUpdate);
+		});
+
+		return datesArray;
+	}
+
+	function busLinesFromJSON(data) {
+		data = analysesData(data);
+      	
+      	var busLinesSet = {}; //creating a JavaScript Object, that is nothing more than a Set (does not allow duplicates!)
+
+      	data.map(function(data) {
+      		var buses = data.DATA;
+      		var lastUpdate = data.LASTUPDATE;
+
+      		var l = buses.length;
+      		for (var i=0; i < l; i++) {
+      			var bus = buses[i];
+        		var busLine = ("" + bus[2]).trim(); // trimming whitespaces to normalize keys
+        		
+        		if (!busLinesSet[busLine]) {
+        			busLinesSet[busLine] = [lastUpdate];
+        		}else {
+        			if (!contains(busLinesSet[busLine], lastUpdate)) {
+        				busLinesSet[busLine].push(lastUpdate);
+        			}
+        		}
+      		}
+      	});
+
+      	return busLinesSet;
+    }
+
+    function busLinesFromSpreadsheet() {
+    	var santaCruzConsortium = "388,750,752,754,756,759,857,858,870,871,872,873,881,892,2303,2304,2307,2308,2309,2331,SN870,SP870,SV858,SV870,364,365,367,379,383,389,394,395,739,741,742,743,744,751,767,777,794,801,933,936,SN741,SN744,SN777,SP383,SV367,SV379,SV389,SV394,SV395,SV777,369,370,392,393,396,397,923,2310,SN392,SN393,SN397,SR393,SR397,366,387,398,770,771,804,807,813,821,822,824,825,830,833,839,840,841,842,849,850,868,869,878,882,885,891,893,895,896,897,898,2335,2336,2337,2802,SN398,SN839,SN840,SN841,SN850,SN882,SN898,SP850,SR398,SV2336,SV841,391,684,730,731,737,740,745,746,784,790,798,803,811,812,819,820,926,SN737,SN745,SN803,SP746,SV745,SV790,SV819,SN803,801,803,769,802,814,834,835,836,837,838,843,845,851,852,853,854,855,864,866,867,876,877,879,883,884,918,2332,2334,2338,2381,2801,SE867,SN838,SN854,SN867,SV2334,SV2381,SV843,SV853,SV854,SV866,358,689,738,786,828,846,847,848,894,937,SN689,SN786,SN846,SV358,";
+      	var interSulConsortium = "201,202,204,401,411,413,415,426,626,423,425,434,435,436,464,2005,2014,2015,2017,2019,122,124,125,217,409,416,602,2203,158,169,176,186,521,522,523,524,546,590,591,592,593,220,226,229,448,603,604,608,210,441,445,461,472,473,474,475,476,503,209,107,177,110,111,120,121,123,126,127,128,129,132,170,172,173,178,181,190,440,442,443,444,460,462,463,119,133,136,154,155,161,162,180,183,184,503,511,512,513,569,570,573,574,580,583,584,6,7,10,11,14,410,422,503,507,SE006,SE14,SN006,157,222,420,421,432,433,438,439,605,";
+      	var transCariocaConsortium = "607,667,686,774,775,940,363,651,652,678,SV363,337,340,380,390,600,601,611,690,700,701,800,815,816,817,818,823,826,827,859,880,SE614,SV390,371,723,2018,2918,306,331,332,339,348,352,353,368,525,610,613,614,636,691,692,693,810,829,844,861,862,863,887,958,2110,2111,2112,2114,2115,SE614,301,302,303,304,305,333,345,805,2330,691,693,338,341,732,748,766,888,889,SP341,SV748,2346,343,346,354,465,550,555,556,557,734,753,765,860,875,886,SP465,2345,SV2345,360,361,382,504,505,525,2329,2333,309,315,316,317,318,525,955,957,736,747,749,757,758,760,761,762,763,764,780,806,808,831,832,856,865,875,952,SE831,SE832,SV758,308,314,315,501,502,709,712,721,781,782,783,";
+      	var interNorteConsortium = "254,277,456,457,458,459,650,372,373,374,376,377,665,SV376,SVA665,SVB665,725,639,905,950,951,SV639,SVA905,SVB905,SVC905,261,375,381,384,385,386,399,404,405,480,481,483,484,485,486,497,498,906,945,947,2295,2302,SP386,SP404,SP498,SPA261,SPA384,SPA484,SPB261,SPB384,SPB484,SPC484,SR385,SV385,SV498,653,711,,334,335,919,920,942,SP334,SR335,SV335,SV920,SV942,334,335,919,920,942,SP334,SR335,SV335,SV920,SV942,321,324,325,326,329,330,616,663,969,925,935,2343,2344,SP326,SVA324,SVA326,SVA696,SVB324,SVB326 ,SVB696 ,312,313,621,622,623,625,628,661,662,679,SP312,298,307,344,349,355,673,SPA298,SPA349,SPA355,SPB298,SPB349,SPB355,SPC298,SPC355,SR349,SR355,232,249,606,2251,SE232,SPA232,SPB232,SV606,624,917,SV917,320,322,323,327,328,634,635,901,910,911,913,914,915,922,924,934,2342,SP322,SP910,SV322,SV328,SV901,296,307,342,615,687,688,727,779,793,795,944,946,2305,SP687,SPA342,SPB342,SPC342,SR342,SV779,SV944,630,627,680,2101,2145,307,350,351,629,685,950,951,SP350,SR350,SVA685,SVB685,609,638,676,956,238,239,247,454,SP455,455,362,378,669,727,773,778,908,SP378,SPA362,SPB362,SPC362,SR362,SR378,SV669,SV908";
+
+      	var busLinesFromSpreadsheet = santaCruzConsortium + interSulConsortium + transCariocaConsortium + interNorteConsortium;
+      
+      	return busLinesFromSpreadsheet.split(',');
+    }
+    
+    function busLinesWithNoBusesRunning(data) {
+    	var busLinesArrayFromSpreadsheet = busLinesFromSpreadsheet();
+    	var busLinesSetFromJSON = busLinesFromJSON(data);
+      
+      	var busLinesWithNoBusesSet = {};
+      	var l = busLinesArrayFromSpreadsheet.length;
+
+      	for (var i=0; i < l; i++) {
+      		var busLine = busLinesArrayFromSpreadsheet[i];
+
+       		if (!busLinesSetFromJSON[busLine]) {	//check if the bus line from SpreadSheet isn't present in JSON file.
+   				busLinesWithNoBusesSet[busLine] = "";	//Add to Set the bus line as a key and an empty string as the value of the key.
+       		}
+   		}
+
+   		//Preparing output:
+   		var busLinesArray = [];
+
+   		for (var busLine in busLinesWithNoBusesSet) {
+   			busLinesArray.push(busLine);
+   		}
+
+      	var output = {
+      		"lines": busLinesArray,
+      		"dates": getCollectDates(data),
+        	"numberOfJsonsInData": data.length,
+        	"linesWithNoBuses": busLinesArray.length,
+        	"total": busLinesArrayFromSpreadsheet.length
+      	};
+
+      	return output;
+    }
+
+
 	var result;
 
 	$(document).on('click', '#button', function() {
@@ -286,6 +383,9 @@ window.onload = function() {
 				case "empty-lines":
 				console.log(data);
 					result = emptyLines(data)
+					break;
+				case "lines-with-no-buses":
+					result = busLinesWithNoBusesRunning(data);
 					break;
 				case "stopped":
 					var lat = $('#lat').val(),
@@ -352,6 +452,9 @@ $(function(){
 		switch (inputName) {
 			case "empty-lines":
 				infoText = "Relatório gerado a partir das datas selecionadas que mostra os ônibus sem linha estabelecida no gps.";
+				break;
+			case "lines-with-no-buses":
+				infoText = "Relatório gerado a partir das datas selecionadas que mostra as linhas de ônibus que não que não possuem nenhum ônibus circulando.";
 				break;
 			case "stopped":
 				infoText = "Relatório gerado a partir das datas selecionadas que mostra os ônibus com a velocidade máxima passada (zero para parados) ao redor de uma área.";
@@ -466,6 +569,24 @@ function generateTable(answerArray,report){
 				linha.append('<td>' + answerArray.buses[i][1] + ' </td>');
 				$('#resposta > table > tbody').append(linha);
 
+			}
+			$('#resposta').show();
+		}
+		break;
+	case "lines-with-no-buses":
+		$('#resposta > h2').html('');
+		$('#resposta > table > thead').html('');
+		$('#resposta > table > tbody').html('');
+		if (answerArray.linesWithNoBuses == 0){
+			$('#resposta > h2').append('Nenhum resultado encontrado');	
+		}
+		else {
+			$('#resposta > h2').append('Número de linhas sem ônibus circulando - ' + answerArray.linesWithNoBuses + ' do total de ' + answerArray.total + ' (' + parseFloat(answerArray.linesWithNoBuses/answerArray.total*100).toFixed(2) + '% do total)');
+			$('#resposta > table > thead').append('<th> Linha de ônibus </th>');
+			for (var i in answerArray.lines){
+				var linha = $('<tr>');
+				linha.append('<td>' + answerArray.lines[i] + ' </td>');
+				$('#resposta > table > tbody').append(linha);
 			}
 			$('#resposta').show();
 		}
