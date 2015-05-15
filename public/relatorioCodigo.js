@@ -352,7 +352,7 @@ window.onload = function() {
 		var url;
 
 		if (dateNow.is(":checked") == true) {
-			url = "http://rest.riob.us/all?callback=?";
+			url = "http://rest.riob.us:81/all?callback=?";
 		}
 		else {
 			//converting to correct format, from datetime input, using moment js
@@ -363,7 +363,7 @@ window.onload = function() {
 			else {
 				initialDate = moment(initialDate,"DD/MM/YYYY - HH").format("YYYYMMDDHH");
 				finalDate = moment(finalDate,"DD/MM/YYYY - HH").format("YYYYMMDDHH");
-				url = "http://rest.riob.us/api/" + initialDate + "/" + finalDate + "?callback=?";
+				url = "http://rest.riob.us:81/api/" + initialDate + "/" + finalDate + "?callback=?";
 			}
 		}
 
